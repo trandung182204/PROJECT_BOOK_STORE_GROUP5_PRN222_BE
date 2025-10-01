@@ -1,0 +1,6 @@
+@PROJECT_BOOK_STORE_GROUP5_PRN222_HostAddress = http://localhost:5282
+
+GET {{PROJECT_BOOK_STORE_GROUP5_PRN222_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
