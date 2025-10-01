@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
+using PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories;
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222
 {
@@ -18,6 +19,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<BookStoreContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 
             var app = builder.Build();
 
