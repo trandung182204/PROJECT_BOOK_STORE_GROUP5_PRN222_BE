@@ -8,7 +8,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
         Task<IEnumerable<T>> GetAllAsync();
 
         // Lấy theo Id
-        Task<T?> GetByIdAsync(int id);
+        Task<T?> GetByIdAsync(long id);
 
         // Tìm với điều kiện (predicate)
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
@@ -26,6 +26,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
         Task DeleteAsync(T entity);
 
         // Xoá theo Id
-        Task DeleteByIdAsync(int id);
+        Task DeleteByIdAsync(long id);
     }
 }

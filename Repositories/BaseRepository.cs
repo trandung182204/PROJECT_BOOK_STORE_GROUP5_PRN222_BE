@@ -21,7 +21,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<T?> GetByIdAsync(long id)
         {
             return await _dbSet.FindAsync(id);
         }
@@ -55,7 +55,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteByIdAsync(int id)
+        public async Task DeleteByIdAsync(long id)
         {
             var entity = await GetByIdAsync(id);
             if (entity != null)
