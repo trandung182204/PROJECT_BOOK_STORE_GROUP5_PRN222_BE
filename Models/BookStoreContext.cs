@@ -35,10 +35,6 @@ public partial class BookStoreContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=Admin\\SQLEXPRESS;Database=book_store;User Id=sa;Password=123456;Encrypt=False;");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Book>(entity =>
@@ -109,7 +105,7 @@ public partial class BookStoreContext : DbContext
 
             entity.HasOne(d => d.Book).WithMany(p => p.BookCategories)
                 .HasForeignKey(d => d.BookId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__book_cate__book___45BE5BA9");
 
             entity.HasOne(d => d.Category).WithMany(p => p.BookCategories)
@@ -151,7 +147,7 @@ public partial class BookStoreContext : DbContext
 
             entity.HasOne(d => d.Book).WithMany(p => p.CartItems)
                 .HasForeignKey(d => d.BookId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__cart_item__book___2180FB33");
 
             entity.HasOne(d => d.Cart).WithMany(p => p.CartItems)
@@ -236,7 +232,7 @@ public partial class BookStoreContext : DbContext
 
             entity.HasOne(d => d.Book).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.BookId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK__order_ite__book___30C33EC3");
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderItems)
@@ -293,7 +289,7 @@ public partial class BookStoreContext : DbContext
 
             entity.HasOne(d => d.Book).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.BookId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__reviews__book_id__540C7B00");
 
             entity.HasOne(d => d.User).WithMany(p => p.Reviews)

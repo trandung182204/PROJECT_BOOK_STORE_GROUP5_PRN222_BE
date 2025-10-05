@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories;
+using PROJECT_BOOK_STORE_GROUP5_PRN222.Services;
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222
 {
@@ -15,6 +16,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddScoped<IBookService, BookService>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<BookStoreContext>(options =>

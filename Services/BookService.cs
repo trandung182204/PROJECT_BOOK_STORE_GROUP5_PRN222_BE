@@ -42,7 +42,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             if (book == null)
                 throw new KeyNotFoundException($"Book with ID {id} not found.");
 
-            await baseRepository.DeleteByIdAsync(id);
+            book.Status = "INACTIVE";
+            await baseRepository.UpdateAsync(book);
         }
 
         public async Task<IEnumerable<Book>> GetAllAsync()
