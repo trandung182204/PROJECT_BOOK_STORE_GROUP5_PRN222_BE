@@ -27,6 +27,20 @@ public partial class User
 
     public DateTime? UpdatedAt { get; set; }
 
+    public string? AvatarUrl { get; set; }
+
+    public bool? IsDeleted { get; set; }
+
+    public DateTime? CreatedAt1 { get; set; }
+
+    public DateTime? UpdatedAt1 { get; set; }
+
+    public string? AvatarUrl1 { get; set; }
+
+    public bool? IsDeleted1 { get; set; }
+
+    public virtual ICollection<ActivityLog> ActivityLogs { get; set; } = new List<ActivityLog>();
+
     public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();

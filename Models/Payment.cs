@@ -19,5 +19,9 @@ public partial class Payment
 
     public DateTime? PaidAt { get; set; }
 
+    public bool? IsDeleted { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
     public virtual Order Order { get; set; } = null!;
 }

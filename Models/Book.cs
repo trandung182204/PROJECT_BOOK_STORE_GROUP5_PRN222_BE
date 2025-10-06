@@ -39,9 +39,31 @@ public partial class Book
 
     public DateTime? UpdatedAt { get; set; }
 
+    public decimal? AverageRating { get; set; }
+
+    public int? SoldCount { get; set; }
+
+    public string? ThumbnailUrl1 { get; set; }
+
+    public bool? IsDeleted { get; set; }
+
+    public DateTime? CreatedAt1 { get; set; }
+
+    public DateTime? UpdatedAt1 { get; set; }
+
+    public decimal? AverageRating1 { get; set; }
+
+    public int? SoldCount1 { get; set; }
+
+    public bool? IsDeleted1 { get; set; }
+
     public virtual ICollection<BookCategory> BookCategories { get; set; } = new List<BookCategory>();
 
+    public virtual ICollection<BookImage> BookImages { get; set; } = new List<BookImage>();
+
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
+    public virtual ICollection<InventoryLog> InventoryLogs { get; set; } = new List<InventoryLog>();
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 

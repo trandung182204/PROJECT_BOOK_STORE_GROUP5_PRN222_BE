@@ -13,6 +13,10 @@ public partial class CartItem
 
     public int? Quantity { get; set; }
 
+    public bool? IsDeleted { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
     public virtual Book Book { get; set; } = null!;
 
     public virtual Cart Cart { get; set; } = null!;

@@ -17,6 +17,10 @@ public partial class Review
 
     public DateTime? CreatedAt { get; set; }
 
+    public bool? IsApproved { get; set; }
+
+    public bool? IsDeleted { get; set; }
+
     public virtual Book Book { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;

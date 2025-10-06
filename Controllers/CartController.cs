@@ -24,11 +24,11 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
             return Ok(new { message = "Book added to cart successfully!", cart });
         }
 
-        [HttpDelete("delete")]
-        public async Task<IActionResult> DeleteCartItem([FromBody] long cartItemId)
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteCartItem(long id)
         {
-            await _cartService.DeleteCartItemAsync(cartItemId);
-            return Ok(new { message = "Delete cartItem successfully!", cartItemId });
+            await _cartService.DeleteCartItemAsync(id);
+            return Ok(new { message = "Delete cartItem successfully!", id });
         }
     }
 }

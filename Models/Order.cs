@@ -23,6 +23,10 @@ public partial class Order
 
     public DateTime? CreatedAt { get; set; }
 
+    public bool? IsDeleted { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
