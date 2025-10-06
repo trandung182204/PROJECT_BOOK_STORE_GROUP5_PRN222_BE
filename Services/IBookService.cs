@@ -4,10 +4,10 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
 {
     public interface IBookService
     {
-        Task<IEnumerable<Book>> GetAllAsync();
-        Task<Book?> GetByIdAsync(long id);
-        Task AddAsync(Book book);
-        Task UpdateAsync(Book book);
-        Task DeleteAsync(long id);
+        Task<IEnumerable<Book>> GetAllBookAsync();
+        Task<Book?> GetBookByIdAsync(long id);
+        Task AddBookAsync(Book book);
+        Task UpdateBookAsync(Book book);
+        Task DeleteBookAsync(long id);
     }
 }

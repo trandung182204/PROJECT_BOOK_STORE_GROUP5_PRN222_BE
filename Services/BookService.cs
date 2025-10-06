@@ -12,7 +12,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             this.baseRepository = baseRepository;
         }
 
-        public async Task AddAsync(Book book)
+        public async Task AddBookAsync(Book book)
         {
             // Validate input
             if (book == null)
@@ -33,7 +33,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             await baseRepository.AddAsync(book);
         }
 
-        public async Task DeleteAsync(long id)
+        public async Task DeleteBookAsync(long id)
         {
             if (id <= 0)
                 throw new ArgumentException("Invalid book ID.");
@@ -46,7 +46,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             await baseRepository.UpdateAsync(book);
         }
 
-        public async Task<IEnumerable<Book>> GetAllAsync()
+        public async Task<IEnumerable<Book>> GetAllBookAsync()
         {
             var books = await baseRepository.GetAllAsync();
             if (books == null || !books.Any())
@@ -55,7 +55,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             return books;
         }
 
-        public async Task<Book?> GetByIdAsync(long id)
+        public async Task<Book?> GetBookByIdAsync(long id)
         {
             if (id <= 0)
                 throw new ArgumentException("Invalid book ID.");
@@ -67,7 +67,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             return book;
         }
 
-        public async Task UpdateAsync(Book book)
+        public async Task UpdateBookAsync(Book book)
         {
             if (book == null)
                 throw new ArgumentNullException(nameof(book), "Book cannot be null.");
