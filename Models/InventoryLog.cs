@@ -15,8 +15,6 @@ public partial class InventoryLog
 
     public string? Note { get; set; }
 
-    public bool? IsDeleted { get; set; }
-
     public DateTime? CreatedAt { get; set; }
 
     public virtual Book Book { get; set; } = null!;

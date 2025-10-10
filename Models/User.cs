@@ -19,25 +19,17 @@ public partial class User
 
     public string? Address { get; set; }
 
+    public string? AvatarUrl { get; set; }
+
     public string Role { get; set; } = null!;
 
     public string Status { get; set; } = null!;
 
-    public DateTime? CreatedAt { get; set; }
+    public bool IsDeleted { get; set; }
+
+    public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
-
-    public string? AvatarUrl { get; set; }
-
-    public bool? IsDeleted { get; set; }
-
-    public DateTime? CreatedAt1 { get; set; }
-
-    public DateTime? UpdatedAt1 { get; set; }
-
-    public string? AvatarUrl1 { get; set; }
-
-    public bool? IsDeleted1 { get; set; }
 
     public virtual ICollection<ActivityLog> ActivityLogs { get; set; } = new List<ActivityLog>();
 

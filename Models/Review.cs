@@ -15,11 +15,9 @@ public partial class Review
 
     public string? Comment { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
-
-    public bool? IsApproved { get; set; }
-
     public bool? IsDeleted { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
 
     public virtual Book Book { get; set; } = null!;
 

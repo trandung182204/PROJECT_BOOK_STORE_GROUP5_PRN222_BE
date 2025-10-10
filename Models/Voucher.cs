@@ -25,7 +25,5 @@ public partial class Voucher
 
     public string? Status { get; set; }
 
-    public bool? IsDeleted { get; set; }
-
     public DateTime? CreatedAt { get; set; }
 }

@@ -9,9 +9,9 @@ public partial class Cart
 
     public long UserId { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
-
     public bool? IsDeleted { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 

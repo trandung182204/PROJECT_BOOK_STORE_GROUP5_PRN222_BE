@@ -45,13 +45,13 @@ public partial class BookStoreContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=.;Database=book_store;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=Admin\\SQLEXPRESS;Database=book_store;User Id=sa;Password=123456;Encrypt=False;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ActivityLog>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__activity__3213E83F78C8C94C");
+            entity.HasKey(e => e.Id).HasName("PK__activity__3213E83F44BC0CF2");
 
             entity.ToTable("activity_logs");
 
@@ -63,55 +63,41 @@ public partial class BookStoreContext : DbContext
                 .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("created_at");
             entity.Property(e => e.Detail).HasColumnName("detail");
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValue(false)
-                .HasColumnName("is_deleted");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
             entity.HasOne(d => d.User).WithMany(p => p.ActivityLogs)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__activity___user___681373AD");
+                .HasConstraintName("FK_activity_logs_user");
         });
 
         modelBuilder.Entity<Book>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__books__3213E83F67728AE1");
+            entity.HasKey(e => e.Id).HasName("PK__books__3213E83F4DF6C76A");
 
             entity.ToTable("books");
 
-            entity.HasIndex(e => e.Code, "UQ__books__357D4CF9E0A42EA1").IsUnique();
+            entity.HasIndex(e => e.Code, "UQ__books__357D4CF97308C31E").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Author)
                 .HasMaxLength(255)
                 .HasColumnName("author");
-            entity.Property(e => e.AverageRating)
-                .HasDefaultValue(0m)
-                .HasColumnType("decimal(3, 2)");
-            entity.Property(e => e.AverageRating1)
-                .HasDefaultValue(0m)
-                .HasColumnType("decimal(3, 2)")
-                .HasColumnName("average_rating");
             entity.Property(e => e.Code)
                 .HasMaxLength(100)
                 .HasColumnName("code");
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnName("created_at");
-            entity.Property(e => e.CreatedAt1)
                 .HasDefaultValueSql("(sysutcdatetime())")
-                .HasColumnName("CreatedAt");
+                .HasColumnName("created_at");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.DiscountPrice)
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("discount_price");
-            entity.Property(e => e.ImageUrl)
-                .HasMaxLength(500)
-                .HasColumnName("image_url");
-            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
-            entity.Property(e => e.IsDeleted1)
+            entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(false)
                 .HasColumnName("is_deleted");
+            entity.Property(e => e.Isbn)
+                .HasMaxLength(50)
+                .HasColumnName("isbn");
             entity.Property(e => e.Language)
                 .HasMaxLength(100)
                 .HasColumnName("language");
@@ -119,18 +105,12 @@ public partial class BookStoreContext : DbContext
             entity.Property(e => e.Price)
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("price");
-            entity.Property(e => e.PrintType)
-                .HasMaxLength(100)
-                .HasColumnName("print_type");
+            entity.Property(e => e.PublicationYear).HasColumnName("publication_year");
             entity.Property(e => e.Publisher)
                 .HasMaxLength(255)
                 .HasColumnName("publisher");
-            entity.Property(e => e.SoldCount).HasDefaultValue(0);
-            entity.Property(e => e.SoldCount1)
-                .HasDefaultValue(0)
-                .HasColumnName("sold_count");
             entity.Property(e => e.Status)
-                .HasMaxLength(20)
+                .HasMaxLength(30)
                 .HasDefaultValue("ACTIVE")
                 .HasColumnName("status");
             entity.Property(e => e.StockQuantity)
@@ -139,27 +119,17 @@ public partial class BookStoreContext : DbContext
             entity.Property(e => e.ThumbnailUrl)
                 .HasMaxLength(500)
                 .HasColumnName("thumbnail_url");
-            entity.Property(e => e.ThumbnailUrl1)
-                .HasMaxLength(500)
-                .HasColumnName("ThumbnailUrl");
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .HasColumnName("title");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("(NULL)")
-                .HasColumnName("updated_at");
-            entity.Property(e => e.UpdatedAt1).HasColumnName("UpdatedAt");
+            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
         });
 
         modelBuilder.Entity<BookCategory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__book_cat__3213E83F8E00D2F5");
+            entity.HasKey(e => e.Id).HasName("PK__book_cat__3213E83FE0577D5F");
 
             entity.ToTable("book_categories");
-
-            entity.HasIndex(e => e.BookId, "IX_book_categories_book_id");
-
-            entity.HasIndex(e => e.CategoryId, "IX_book_categories_category_id");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.BookId).HasColumnName("book_id");
@@ -167,17 +137,16 @@ public partial class BookStoreContext : DbContext
 
             entity.HasOne(d => d.Book).WithMany(p => p.BookCategories)
                 .HasForeignKey(d => d.BookId)
-                .HasConstraintName("FK__book_cate__book___45BE5BA9");
+                .HasConstraintName("FK_book_categories_book");
 
             entity.HasOne(d => d.Category).WithMany(p => p.BookCategories)
                 .HasForeignKey(d => d.CategoryId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__book_cate__categ__46B27FE2");
+                .HasConstraintName("FK_book_categories_category");
         });
 
         modelBuilder.Entity<BookImage>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__book_ima__3213E83F1133BAA0");
+            entity.HasKey(e => e.Id).HasName("PK__book_ima__3213E83FC20644AB");
 
             entity.ToTable("book_images");
 
@@ -195,21 +164,18 @@ public partial class BookStoreContext : DbContext
 
             entity.HasOne(d => d.Book).WithMany(p => p.BookImages)
                 .HasForeignKey(d => d.BookId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__book_imag__book___5E8A0973");
+                .HasConstraintName("FK_book_images_book");
         });
 
         modelBuilder.Entity<Cart>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__carts__3213E83FA9386628");
+            entity.HasKey(e => e.Id).HasName("PK__carts__3213E83F578BC5AC");
 
             entity.ToTable("carts");
 
-            entity.HasIndex(e => e.UserId, "IX_carts_user_id");
-
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
+                .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("created_at");
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(false)
@@ -218,19 +184,14 @@ public partial class BookStoreContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Carts)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__carts__user_id__1CBC4616");
+                .HasConstraintName("FK_carts_user");
         });
 
         modelBuilder.Entity<CartItem>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__cart_ite__3213E83F126BE46B");
+            entity.HasKey(e => e.Id).HasName("PK__cart_ite__3213E83F114ACDC6");
 
             entity.ToTable("cart_items");
-
-            entity.HasIndex(e => e.BookId, "IX_cart_items_book_id");
-
-            entity.HasIndex(e => e.CartId, "IX_cart_items_cart_id");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.BookId).HasColumnName("book_id");
@@ -238,30 +199,26 @@ public partial class BookStoreContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("created_at");
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValue(false)
-                .HasColumnName("is_deleted");
             entity.Property(e => e.Quantity)
                 .HasDefaultValue(1)
                 .HasColumnName("quantity");
 
             entity.HasOne(d => d.Book).WithMany(p => p.CartItems)
                 .HasForeignKey(d => d.BookId)
-                .HasConstraintName("FK__cart_item__book___2180FB33");
+                .HasConstraintName("FK_cart_items_book");
 
             entity.HasOne(d => d.Cart).WithMany(p => p.CartItems)
                 .HasForeignKey(d => d.CartId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__cart_item__cart___208CD6FA");
+                .HasConstraintName("FK_cart_items_cart");
         });
 
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__categori__3213E83F3D6EB9C1");
+            entity.HasKey(e => e.Id).HasName("PK__categori__3213E83FE19B44D3");
 
             entity.ToTable("categories");
 
-            entity.HasIndex(e => e.CategoryCode, "UQ__categori__BC9D1E7CDD7A9C13").IsUnique();
+            entity.HasIndex(e => e.CategoryCode, "UQ__categori__BC9D1E7C9E5F56CE").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CategoryCode)
@@ -271,13 +228,20 @@ public partial class BookStoreContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("category_name");
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
+                .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("created_at");
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.ParentId).HasColumnName("parent_id");
+            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+
+            entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent)
+                .HasForeignKey(d => d.ParentId)
+                .HasConstraintName("FK_categories_parent");
         });
 
         modelBuilder.Entity<InventoryLog>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__inventor__3213E83FECEE7682");
+            entity.HasKey(e => e.Id).HasName("PK__inventor__3213E83F683E428A");
 
             entity.ToTable("inventory_logs");
 
@@ -289,33 +253,24 @@ public partial class BookStoreContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("created_at");
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValue(false)
-                .HasColumnName("is_deleted");
             entity.Property(e => e.Note).HasColumnName("note");
             entity.Property(e => e.QuantityChange).HasColumnName("quantity_change");
 
             entity.HasOne(d => d.Book).WithMany(p => p.InventoryLogs)
                 .HasForeignKey(d => d.BookId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__inventory__book___634EBE90");
+                .HasConstraintName("FK_inventory_logs_book");
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__orders__3213E83F738531E8");
+            entity.HasKey(e => e.Id).HasName("PK__orders__3213E83FCA8A3B67");
 
             entity.ToTable("orders");
 
-            entity.HasIndex(e => e.UserId, "IX_orders_user_id");
-
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
+                .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("created_at");
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValue(false)
-                .HasColumnName("is_deleted");
             entity.Property(e => e.OrderStatus)
                 .HasMaxLength(20)
                 .HasDefaultValue("PENDING")
@@ -330,7 +285,7 @@ public partial class BookStoreContext : DbContext
                 .HasColumnName("payment_status");
             entity.Property(e => e.ShippingAddress).HasColumnName("shipping_address");
             entity.Property(e => e.ShippingFee)
-                .HasDefaultValue(0.0m)
+                .HasDefaultValue(0m)
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("shipping_fee");
             entity.Property(e => e.TotalAmount)
@@ -342,27 +297,20 @@ public partial class BookStoreContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__orders__user_id__2BFE89A6");
+                .HasConstraintName("FK_orders_user");
         });
 
         modelBuilder.Entity<OrderItem>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__order_it__3213E83F5C6D1A1D");
+            entity.HasKey(e => e.Id).HasName("PK__order_it__3213E83FB8B6104F");
 
             entity.ToTable("order_items");
-
-            entity.HasIndex(e => e.BookId, "IX_order_items_book_id");
-
-            entity.HasIndex(e => e.OrderId, "IX_order_items_order_id");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.BookId).HasColumnName("book_id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("created_at");
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValue(false)
-                .HasColumnName("is_deleted");
             entity.Property(e => e.OrderId).HasColumnName("order_id");
             entity.Property(e => e.Quantity)
                 .HasDefaultValue(1)
@@ -373,22 +321,18 @@ public partial class BookStoreContext : DbContext
 
             entity.HasOne(d => d.Book).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.BookId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__order_ite__book___30C33EC3");
+                .HasConstraintName("FK_order_items_book");
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.OrderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__order_ite__order__2FCF1A8A");
+                .HasConstraintName("FK_order_items_order");
         });
 
         modelBuilder.Entity<Payment>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__payments__3213E83FF91DD0E9");
+            entity.HasKey(e => e.Id).HasName("PK__payments__3213E83F33F279F1");
 
             entity.ToTable("payments");
-
-            entity.HasIndex(e => e.OrderId, "IX_payments_order_id");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Amount)
@@ -397,13 +341,8 @@ public partial class BookStoreContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("created_at");
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValue(false)
-                .HasColumnName("is_deleted");
             entity.Property(e => e.OrderId).HasColumnName("order_id");
-            entity.Property(e => e.PaidAt)
-                .HasDefaultValueSql("(NULL)")
-                .HasColumnName("paid_at");
+            entity.Property(e => e.PaidAt).HasColumnName("paid_at");
             entity.Property(e => e.PaymentMethod)
                 .HasMaxLength(20)
                 .HasColumnName("payment_method");
@@ -417,29 +356,21 @@ public partial class BookStoreContext : DbContext
 
             entity.HasOne(d => d.Order).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.OrderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__payments__order___4F47C5E3");
+                .HasConstraintName("FK_payments_order");
         });
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__reviews__3213E83FC6757D82");
+            entity.HasKey(e => e.Id).HasName("PK__reviews__3213E83F321C133F");
 
             entity.ToTable("reviews");
-
-            entity.HasIndex(e => e.BookId, "IX_reviews_book_id");
-
-            entity.HasIndex(e => e.UserId, "IX_reviews_user_id");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.BookId).HasColumnName("book_id");
             entity.Property(e => e.Comment).HasColumnName("comment");
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
+                .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("created_at");
-            entity.Property(e => e.IsApproved)
-                .HasDefaultValue(true)
-                .HasColumnName("is_approved");
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(false)
                 .HasColumnName("is_deleted");
@@ -448,46 +379,38 @@ public partial class BookStoreContext : DbContext
 
             entity.HasOne(d => d.Book).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.BookId)
-                .HasConstraintName("FK__reviews__book_id__540C7B00");
+                .HasConstraintName("FK_reviews_book");
 
             entity.HasOne(d => d.User).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__reviews__user_id__55009F39");
+                .HasConstraintName("FK_reviews_user");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__users__3213E83F83CF44CE");
+            entity.HasKey(e => e.Id).HasName("PK__users__3213E83F72CD265C");
 
             entity.ToTable("users");
 
-            entity.HasIndex(e => e.Email, "UQ__users__AB6E6164C519C7E3").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__users__AB6E6164B9CF8F47").IsUnique();
 
-            entity.HasIndex(e => e.Username, "UQ__users__F3DBC57266717BA7").IsUnique();
+            entity.HasIndex(e => e.Username, "UQ__users__F3DBC5721EAD29EB").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Address).HasColumnName("address");
-            entity.Property(e => e.AvatarUrl).HasMaxLength(500);
-            entity.Property(e => e.AvatarUrl1)
+            entity.Property(e => e.AvatarUrl)
                 .HasMaxLength(500)
                 .HasColumnName("avatar_url");
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnName("created_at");
-            entity.Property(e => e.CreatedAt1)
                 .HasDefaultValueSql("(sysutcdatetime())")
-                .HasColumnName("CreatedAt");
+                .HasColumnName("created_at");
             entity.Property(e => e.Email)
                 .HasMaxLength(255)
                 .HasColumnName("email");
             entity.Property(e => e.Fullname)
                 .HasMaxLength(255)
                 .HasColumnName("fullname");
-            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
-            entity.Property(e => e.IsDeleted1)
-                .HasDefaultValue(false)
-                .HasColumnName("is_deleted");
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.PasswordHash)
                 .HasMaxLength(255)
                 .HasColumnName("password_hash");
@@ -502,10 +425,7 @@ public partial class BookStoreContext : DbContext
                 .HasMaxLength(20)
                 .HasDefaultValue("ACTIVE")
                 .HasColumnName("status");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("(NULL)")
-                .HasColumnName("updated_at");
-            entity.Property(e => e.UpdatedAt1).HasColumnName("UpdatedAt");
+            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
             entity.Property(e => e.Username)
                 .HasMaxLength(100)
                 .HasColumnName("username");
@@ -513,11 +433,11 @@ public partial class BookStoreContext : DbContext
 
         modelBuilder.Entity<Voucher>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__vouchers__3213E83F7395D289");
+            entity.HasKey(e => e.Id).HasName("PK__vouchers__3213E83FC517A450");
 
             entity.ToTable("vouchers");
 
-            entity.HasIndex(e => e.Code, "UQ__vouchers__357D4CF9836694F0").IsUnique();
+            entity.HasIndex(e => e.Code, "UQ__vouchers__357D4CF9530AC207").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Code)
@@ -533,9 +453,6 @@ public partial class BookStoreContext : DbContext
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("discount_value");
             entity.Property(e => e.EndDate).HasColumnName("end_date");
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValue(false)
-                .HasColumnName("is_deleted");
             entity.Property(e => e.MinOrderValue)
                 .HasDefaultValue(0m)
                 .HasColumnType("decimal(12, 2)")

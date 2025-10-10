@@ -9,21 +9,19 @@ public partial class Order
 
     public long UserId { get; set; }
 
-    public string OrderStatus { get; set; } = null!;
+    public string? OrderStatus { get; set; }
 
-    public string PaymentStatus { get; set; } = null!;
+    public string? PaymentStatus { get; set; }
 
-    public string PaymentMethod { get; set; } = null!;
+    public string? PaymentMethod { get; set; }
 
-    public string ShippingAddress { get; set; } = null!;
+    public string? ShippingAddress { get; set; }
 
     public decimal? ShippingFee { get; set; }
 
     public decimal TotalAmount { get; set; }
 
     public DateTime? CreatedAt { get; set; }
-
-    public bool? IsDeleted { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 

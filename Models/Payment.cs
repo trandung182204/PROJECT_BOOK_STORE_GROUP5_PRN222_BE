@@ -9,17 +9,15 @@ public partial class Payment
 
     public long OrderId { get; set; }
 
-    public string PaymentMethod { get; set; } = null!;
+    public string? PaymentMethod { get; set; }
 
     public decimal Amount { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string? Status { get; set; }
 
     public string? TransactionId { get; set; }
 
     public DateTime? PaidAt { get; set; }
-
-    public bool? IsDeleted { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

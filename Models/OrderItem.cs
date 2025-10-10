@@ -11,11 +11,9 @@ public partial class OrderItem
 
     public long BookId { get; set; }
 
-    public int? Quantity { get; set; }
+    public int Quantity { get; set; }
 
     public decimal UnitPrice { get; set; }
-
-    public bool? IsDeleted { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

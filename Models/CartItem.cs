@@ -11,9 +11,7 @@ public partial class CartItem
 
     public long BookId { get; set; }
 
-    public int? Quantity { get; set; }
-
-    public bool? IsDeleted { get; set; }
+    public int Quantity { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

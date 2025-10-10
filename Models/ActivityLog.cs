@@ -13,8 +13,6 @@ public partial class ActivityLog
 
     public string? Detail { get; set; }
 
-    public bool? IsDeleted { get; set; }
-
     public DateTime? CreatedAt { get; set; }
 
     public virtual User? User { get; set; }

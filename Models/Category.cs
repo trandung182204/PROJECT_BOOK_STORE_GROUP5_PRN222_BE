@@ -11,7 +11,17 @@ public partial class Category
 
     public string CategoryName { get; set; } = null!;
 
-    public DateTime? CreatedAt { get; set; }
+    public long? ParentId { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
 
     public virtual ICollection<BookCategory> BookCategories { get; set; } = new List<BookCategory>();
+
+    public virtual ICollection<Category> InverseParent { get; set; } = new List<Category>();
+
+    public virtual Category? Parent { get; set; }
 }
