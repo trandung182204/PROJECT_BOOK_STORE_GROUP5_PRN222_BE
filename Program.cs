@@ -25,6 +25,10 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
             builder.Services.AddScoped<IBookService, BookService>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<BookStoreContext>(options =>
