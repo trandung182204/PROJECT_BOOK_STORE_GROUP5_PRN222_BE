@@ -2,7 +2,7 @@
 {
     public class AddToCartRequest
     {
-        public long UserId { get; set; }
+        public string UserId { get; set; }
         public long BookId { get; set; }
         public int Quantity { get; set; }
     }
