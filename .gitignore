@@ -423,3 +423,4 @@ appsettings.Production.json
 
 docker-compose.yml
 Dockerfile
+.idea/
