@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
@@ -12,10 +13,10 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
             _bookStoreContext = context;
         }
 
-        public async Task<Cart?> GetCartByUserIdAsync(long userId)
+        public async Task<Cart?> GetCartByUserIdAsync(string userId)
         {
             return await  _bookStoreContext.Carts.Include(c => c.CartItems)
-                          .FirstOrDefaultAsync(x => x.Id == userId);
+                          .FirstOrDefaultAsync(x => x.Id.Equals(userId));
         }
     }
 }

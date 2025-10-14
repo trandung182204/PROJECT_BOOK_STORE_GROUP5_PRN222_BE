@@ -22,7 +22,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             _bookStoreContext = bookStoreContext;
         }
 
-        public async Task<Cart> AddCartAsync(long userId, long bookId, int quantity)
+        public async Task<Cart> AddCartAsync(string userId, long bookId, int quantity)
         {
             var cart = await _cartRepository.GetCartByUserIdAsync(userId);
             if (cart == null)
@@ -89,7 +89,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<Cart?> GetCartByUserId(long id)
+        public async Task<Cart?> GetCartByUserId(string id)
         {
             return await _bookStoreContext.Carts
                 .Include(c => c.CartItems)

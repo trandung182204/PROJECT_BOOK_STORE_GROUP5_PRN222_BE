@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PROJECT_BOOK_STORE_GROUP5_PRN222.Data;
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 
-public partial class BookStoreContext : DbContext
+public partial class BookStoreContext : IdentityDbContext<ApplicationUser>
 {
     public BookStoreContext()
     {
@@ -39,8 +41,6 @@ public partial class BookStoreContext : DbContext
 
     public virtual DbSet<Review> Reviews { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
-
     public virtual DbSet<Voucher> Vouchers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -49,6 +49,9 @@ public partial class BookStoreContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // ⚠️ Dòng này rất quan trọng để Identity tự cấu hình khóa chính
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<ActivityLog>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__activity__3213E83F44BC0CF2");
@@ -386,50 +389,50 @@ public partial class BookStoreContext : DbContext
                 .HasConstraintName("FK_reviews_user");
         });
 
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__users__3213E83F72CD265C");
-
-            entity.ToTable("users");
-
-            entity.HasIndex(e => e.Email, "UQ__users__AB6E6164B9CF8F47").IsUnique();
-
-            entity.HasIndex(e => e.Username, "UQ__users__F3DBC5721EAD29EB").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Address).HasColumnName("address");
-            entity.Property(e => e.AvatarUrl)
-                .HasMaxLength(500)
-                .HasColumnName("avatar_url");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(sysutcdatetime())")
-                .HasColumnName("created_at");
-            entity.Property(e => e.Email)
-                .HasMaxLength(255)
-                .HasColumnName("email");
-            entity.Property(e => e.Fullname)
-                .HasMaxLength(255)
-                .HasColumnName("fullname");
-            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
-            entity.Property(e => e.PasswordHash)
-                .HasMaxLength(255)
-                .HasColumnName("password_hash");
-            entity.Property(e => e.PhoneNumber)
-                .HasMaxLength(50)
-                .HasColumnName("phone_number");
-            entity.Property(e => e.Role)
-                .HasMaxLength(20)
-                .HasDefaultValue("CUSTOMER")
-                .HasColumnName("role");
-            entity.Property(e => e.Status)
-                .HasMaxLength(20)
-                .HasDefaultValue("ACTIVE")
-                .HasColumnName("status");
-            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
-            entity.Property(e => e.Username)
-                .HasMaxLength(100)
-                .HasColumnName("username");
-        });
+        // modelBuilder.Entity<User>(entity =>
+        // {
+        //     entity.HasKey(e => e.Id).HasName("PK__users__3213E83F72CD265C");
+        //
+        //     entity.ToTable("users");
+        //
+        //     entity.HasIndex(e => e.Email, "UQ__users__AB6E6164B9CF8F47").IsUnique();
+        //
+        //     entity.HasIndex(e => e.Username, "UQ__users__F3DBC5721EAD29EB").IsUnique();
+        //
+        //     entity.Property(e => e.Id).HasColumnName("id");
+        //     entity.Property(e => e.Address).HasColumnName("address");
+        //     entity.Property(e => e.AvatarUrl)
+        //         .HasMaxLength(500)
+        //         .HasColumnName("avatar_url");
+        //     entity.Property(e => e.CreatedAt)
+        //         .HasDefaultValueSql("(sysutcdatetime())")
+        //         .HasColumnName("created_at");
+        //     entity.Property(e => e.Email)
+        //         .HasMaxLength(255)
+        //         .HasColumnName("email");
+        //     entity.Property(e => e.Fullname)
+        //         .HasMaxLength(255)
+        //         .HasColumnName("fullname");
+        //     entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+        //     entity.Property(e => e.PasswordHash)
+        //         .HasMaxLength(255)
+        //         .HasColumnName("password_hash");
+        //     entity.Property(e => e.PhoneNumber)
+        //         .HasMaxLength(50)
+        //         .HasColumnName("phone_number");
+        //     entity.Property(e => e.Role)
+        //         .HasMaxLength(20)
+        //         .HasDefaultValue("CUSTOMER")
+        //         .HasColumnName("role");
+        //     entity.Property(e => e.Status)
+        //         .HasMaxLength(20)
+        //         .HasDefaultValue("ACTIVE")
+        //         .HasColumnName("status");
+        //     entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+        //     entity.Property(e => e.Username)
+        //         .HasMaxLength(100)
+        //         .HasColumnName("username");
+        // });
 
         modelBuilder.Entity<Voucher>(entity =>
         {

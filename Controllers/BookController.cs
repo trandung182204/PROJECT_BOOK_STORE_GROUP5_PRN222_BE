@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PROJECT_BOOK_STORE_GROUP5_PRN222.Helpers;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Services;
 
@@ -22,12 +27,14 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = AppRole.Customer)]
         public async Task<IActionResult> GetById(int id)
         {
             return Ok(await bookService.GetBookByIdAsync(id));
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] Book book)
         {
             await bookService.AddBookAsync(book);
@@ -35,6 +42,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(int id, [FromBody] Book book)
         {
             await bookService.UpdateBookAsync(book);
@@ -42,6 +50,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             await bookService.DeleteBookAsync(id);
