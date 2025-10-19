@@ -67,7 +67,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         public async Task<IActionResult> Delete(long id)
         {
             await categoryService.DeleteCategoryAsync(id);
-            return NoContent();
+            return Ok(new { message = "Category deleted successfully." });
         }
 
         [HttpGet("search")]
