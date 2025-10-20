@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Data;
+using PROJECT_BOOK_STORE_GROUP5_PRN222.Helpers;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Services;
@@ -13,9 +14,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -32,6 +32,11 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
+
+            builder.Services.AddHostedService<RefreshTokenCleanupService>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(option =>
             {
@@ -52,11 +57,11 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
                         {
                             Reference = new OpenApiReference
                             {
-                                Type=ReferenceType.SecurityScheme,
-                                Id="Bearer"
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
                             }
                         },
-                        new string[]{}
+                        new string[] { }
                     }
                 });
             });
@@ -87,6 +92,14 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
                 };
             });
             var app = builder.Build();
+            // Seed dữ liệu Identity
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var configuration = services.GetRequiredService<IConfiguration>();
+                await SeedData.Initialize(services, configuration);
+            }
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -99,12 +112,9 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
 
             app.UseAuthorization();
 
-
             app.MapControllers();
-            
-            app.Run();
-            
 
+            app.Run();
         }
     }
 }

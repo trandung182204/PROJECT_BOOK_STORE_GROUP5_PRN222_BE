@@ -771,6 +771,40 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                     b.ToTable("payments", (string)null);
                 });
 
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExpiredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IssuedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("JwtId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshToken");
+                });
+
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Review", b =>
                 {
                     b.Property<long>("Id")
@@ -1079,6 +1113,15 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasConstraintName("FK_payments_order");
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.RefreshToken", b =>
+                {
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Review", b =>
