@@ -18,6 +18,14 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
             
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    policy => policy.AllowAnyOrigin()
+                                    .AllowAnyMethod()
+                                    .AllowAnyHeader());
+            });
+
             // Add services to the container.
 
             builder.Services.AddControllers()
@@ -89,6 +97,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
                 };
             });
             var app = builder.Build();
+            
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -96,6 +105,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors("AllowAll");
 
             app.UseHttpsRedirection();
 
