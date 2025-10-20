@@ -12,21 +12,21 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(long userId)
+        public async Task<IEnumerable<Order>> GetOrdersByUserNameAsync(string username)
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Book)
-                .Where(o => o.UserId == userId)
+                .Where(o => o.User.FullName.Equals(username))
                 .ToListAsync();
         }
 
-        public async Task<Order?> GetOrderDetailAsync(long id)
+        public async Task<Order?> GetOrderDetailAsync(string id)
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Book)
-                .FirstOrDefaultAsync(o => o.Id == id);
+                .FirstOrDefaultAsync(o => o.Id.Equals(id));
         }
 
         public async Task<IEnumerable<Order>> GetOrders()
@@ -36,5 +36,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
                 .ThenInclude(_o => _o.Book)
                 .ToListAsync();
         }
+
+        
     }
 }
