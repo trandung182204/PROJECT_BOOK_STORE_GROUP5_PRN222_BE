@@ -30,6 +30,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
 
             builder.Services.AddScoped<IBookService, BookService>();
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
             builder.Services.AddScoped<IAccountService, AccountService>();
