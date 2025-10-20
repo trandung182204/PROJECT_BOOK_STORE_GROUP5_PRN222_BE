@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Data;
-using PROJECT_BOOK_STORE_GROUP5_PRN222.Helpers;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Services;
@@ -14,9 +13,18 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
+            
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    policy => policy.AllowAnyOrigin()
+                                    .AllowAnyMethod()
+                                    .AllowAnyHeader());
+            });
 
             // Add services to the container.
 
@@ -34,6 +42,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<ICheckoutService, CheckoutService>();
+            builder.Services.AddScoped<IVnPayService, VnPayService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
@@ -59,11 +69,11 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
                         {
                             Reference = new OpenApiReference
                             {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
+                                Type=ReferenceType.SecurityScheme,
+                                Id="Bearer"
                             }
                         },
-                        new string[] { }
+                        new string[]{}
                     }
                 });
             });
@@ -110,13 +120,18 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("AllowAll");
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
-            app.MapControllers();
 
+            app.MapControllers();
+            
             app.Run();
+            
+
         }
     }
 }
