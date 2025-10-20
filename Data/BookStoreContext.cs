@@ -42,7 +42,9 @@ public partial class BookStoreContext : IdentityDbContext<ApplicationUser>
     public virtual DbSet<Review> Reviews { get; set; }
 
     public virtual DbSet<Voucher> Vouchers { get; set; }
-
+    
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // ⚠️ Dòng này rất quan trọng để Identity tự cấu hình khóa chính

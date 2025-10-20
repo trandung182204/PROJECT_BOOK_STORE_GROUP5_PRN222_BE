@@ -6,12 +6,10 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
 {
     public interface ICartService
     {
-        Task<IEnumerable<Cart>> GetAllCartAsync();
-        Task<Cart> GetCartByIdAsync(long id);
+        Task<Cart> GetCartByUserIdAsync(string userId);
         Task<Cart> AddCartAsync(string userId, long bookId, int quantity);
-        Task UpdateCartAsync(Cart cart);
-        Task DeleteCartAsync(long id);
-        Task<Cart?> GetCartByUserId(string id);
-        Task DeleteCartItemAsync(long cartItemId);
+        Task<CartItem> UpdateCartItemQuantityAsync(long itemId, int quantity);
+        Task DeleteCartItemAsync(long itemId);
+        Task ClearCartAsync(string userId);
     }
 }
