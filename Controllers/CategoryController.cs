@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Services;
+using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
 {
@@ -8,78 +8,64 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly ICategoryService categoryService;
+        private readonly ICategoryService _categoryService;
 
         public CategoryController(ICategoryService categoryService)
         {
-            this.categoryService = categoryService;
+            _categoryService = categoryService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await categoryService.GetAllCategoryAsync();
-            return Ok(categories);
+            var response = await _categoryService.GetAllCategoryAsync();
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(long id)
         {
-            var category = await categoryService.GetCategoryByIdAsync(id);
-            return Ok(category);
+            var response = await _categoryService.GetCategoryByIdAsync(id);
+            return Ok(response);
         }
 
-        // ✅ POST: api/category
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Category category)
+        public async Task<IActionResult> Create([FromBody] CategoryDTO category)
         {
-            if (category == null)
-                return BadRequest("Invalid request body.");
-
-            if (string.IsNullOrWhiteSpace(category.CategoryCode))
-                return BadRequest("CategoryCode is required.");
-            if (string.IsNullOrWhiteSpace(category.CategoryName))
-                return BadRequest("CategoryName is required.");
-            if (await categoryService.ExistsAsync(category.CategoryCode, category.CategoryName))
-                return BadRequest("CategoryCode or CategoryName already exists.");
-
-            category.IsDeleted = false;
-            category.CreatedAt = DateTime.Now;
-            category.UpdatedAt = null;
-
-            await categoryService.AddCategoryAsync(category);
-            return Ok(new { message = "Category created successfully.", category });
+            var response = await _categoryService.AddCategoryAsync(category);
+            return Ok(response);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(long id, [FromBody] Category category)
+        public async Task<IActionResult> Update(long id, [FromBody] CategoryDTO category)
         {
-            if (id != category.Id)
-                return BadRequest("ID mismatch.");
-            if (await categoryService.ExistsAsync(category.CategoryCode, category.CategoryName))
-                return BadRequest("CategoryCode or CategoryName already exists.");
-
-            await categoryService.UpdateCategoryAsync(category);
-            return Ok(new { message = "Category updated successfully.", category });
+            var response = await _categoryService.UpdateCategoryAsync(id, category);
+            return Ok(response);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {
-            await categoryService.DeleteCategoryAsync(id);
-            return Ok(new { message = "Category deleted successfully." });
+            var response = await _categoryService.DeleteCategoryAsync(id);
+            return Ok(response);
         }
 
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                return BadRequest("Search keyword cannot be empty.");
+            var all = await _categoryService.GetAllCategoryAsync();
+            if (!all.Succeeded)
+                return Ok(all);
 
-            var categories = await categoryService.GetAllCategoryAsync();
-            var result = categories.Where(c => c.CategoryName.Contains(name, StringComparison.OrdinalIgnoreCase) && !c.IsDeleted);
+            var list = all.Data as IEnumerable<Category>;
+            var result = list!.Where(c => c.CategoryName.Contains(name, StringComparison.OrdinalIgnoreCase) && !c.IsDeleted).ToList();
 
-            return Ok(result);
+            return Ok(new ApiRespone
+            {
+                Succeeded = true,
+                Message = $"Found {result.Count} categories matching '{name}'.",
+                Data = result
+            });
         }
     }
 }
