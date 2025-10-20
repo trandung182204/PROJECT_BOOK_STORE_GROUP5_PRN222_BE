@@ -4,10 +4,16 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
 {
     public interface IReviewService
     {
-        Task<IEnumerable<Review>> GetReviewByBookIdAsync(long bookId);
-        Task<IEnumerable<Review>> GetReviewByUserIdAsync(string userId);
-        Task<Review?> AddReviewAsync(long bookId, string userId, int rating, string comment);
-        Task<Review?> UpdateReviewAsync(long id, int rating, string comment);
-        Task<bool> DeleteReviewAsync(long id);
+        Task<ApiResponse> GetReviewByBookIdAsync(long bookId);
+        Task<ApiResponse> GetReviewByUserIdAsync(string userId);
+        Task<ApiResponse> AddReviewAsync(long bookId, string userId, int rating, string comment);
+        Task<ApiResponse> UpdateReviewAsync(long id, int rating, string comment);
+        Task<ApiResponse> DeleteReviewAsync(long id);
     }
+    //public class ApiResponse
+    //{
+    //    public bool Succeeded { get; set; }
+    //    public string Message { get; set; } = null!;
+    //    public object Data { get; set; } = null!;
+    //}
 }

@@ -1,4 +1,5 @@
-﻿using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
+﻿using System.Net;
+using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories;
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
@@ -15,7 +16,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             _baseRepository = baseRepository;
         }
 
-        public async Task<Review?> AddReviewAsync(long bookId, string userId, int rating, string comment)
+        public async Task<ApiResponse> AddReviewAsync(long bookId, string userId, int rating, string comment)
         {
             var review = new Review
             {
@@ -26,32 +27,75 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
                 CreatedAt = DateTime.UtcNow
             };
             await _review.AddAsync(review);
-            return review;
+            return new ApiResponse
+            {
+                Succeeded = true,
+                Message = "success",
+                Data = review
+            };
         }
 
-        public async Task<bool> DeleteReviewAsync(long id)
+        public async Task<ApiResponse> DeleteReviewAsync(long id)
         {
             var review = await _review.GetByIdAsync(id);
-            if (review == null) return false;
+            if (review == null) return new ApiResponse
+            {
+                Succeeded = false,
+                Message = "error",
+                Data = review
+            };
             review.IsDeleted = true;
             await _review.UpdateAsync(review);
-            return true;
+            return new ApiResponse
+            {
+                Succeeded = true,
+                Message = "success",
+                Data = review
+            };
         }
 
-        public async Task<IEnumerable<Review>> GetReviewByBookIdAsync(long bookId)
-        => await _review.GetReviewByBookIDAsync(bookId);
+        public async Task<ApiResponse> GetReviewByBookIdAsync(long bookId)
+        //=> await _review.GetReviewByBookIDAsync(bookId);
+        {
+            await _review.GetReviewByBookIDAsync(bookId);
+            return new ApiResponse
+            {
+                Succeeded = true,
+                Message = "success",
+                Data = _review
+            };
+        }
 
-        public async Task<IEnumerable<Review>> GetReviewByUserIdAsync(string userId)
-        => await _review.GetReviewByUserIDAsync(userId);
+        public async Task<ApiResponse> GetReviewByUserIdAsync(string userId)
+        //=> await _review.GetReviewByUserIDAsync(userId);
+        {
+            await _review.GetReviewByUserIDAsync(userId);
+            return new ApiResponse
+            {
+                Succeeded = true,
+                Message = "success",
+                Data = _review
+    };
+}
 
-        public async Task<Review?> UpdateReviewAsync(long id, int rating, string comment)
+public async Task<ApiResponse> UpdateReviewAsync(long id, int rating, string comment)
         {
             var review = await _review.GetByIdAsync(id);
-            if (review == null || review.IsDeleted == null) return null;
+            if (review == null || review.IsDeleted == null) return new ApiResponse
+            {
+                Succeeded = false,
+                Message = "not found",
+                Data = review
+            };
             review.Rating = rating;
             review.Comment = comment;
             await _review.UpdateAsync(review);
-            return review;
+            return new ApiResponse
+            {
+                Succeeded = true,
+                Message = "success",
+                Data = review
+            };
         }
 
     }

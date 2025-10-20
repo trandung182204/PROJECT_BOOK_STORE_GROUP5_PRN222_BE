@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIdentityAuthentication : Migration
+    public partial class InitialDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -304,6 +304,29 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefreshToken",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JwtId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false),
+                    IssuedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiredAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshToken", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshToken_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "book_images",
                 columns: table => new
                 {
@@ -354,7 +377,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    book_id = table.Column<long>(type: "bigint", nullable: false),
+                    book_id = table.Column<long>(type: "bigint", nullable: true),
                     user_id = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     rating = table.Column<int>(type: "int", nullable: true),
                     comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -368,8 +391,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         name: "FK_reviews_book",
                         column: x => x.book_id,
                         principalTable: "books",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_reviews_user",
                         column: x => x.user_id,
@@ -602,6 +624,11 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                 column: "order_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefreshToken_UserId",
+                table: "RefreshToken",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_reviews_book_id",
                 table: "reviews",
                 column: "book_id");
@@ -656,6 +683,9 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
 
             migrationBuilder.DropTable(
                 name: "payments");
+
+            migrationBuilder.DropTable(
+                name: "RefreshToken");
 
             migrationBuilder.DropTable(
                 name: "reviews");

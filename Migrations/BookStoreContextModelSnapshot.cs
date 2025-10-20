@@ -807,14 +807,14 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
 
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Review", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long?>("Id"));
 
-                    b.Property<long>("BookId")
+                    b.Property<long?>("BookId")
                         .HasColumnType("bigint")
                         .HasColumnName("book_id");
 
@@ -1129,8 +1129,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                     b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Book", "Book")
                         .WithMany("Reviews")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("FK_reviews_book");
 
                     b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", "User")
