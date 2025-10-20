@@ -12,12 +12,12 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersByUserNameAsync(string username)
+        public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userid)
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Book)
-                .Where(o => o.User.FullName.Equals(username))
+                .Where(o => o.User.Id.Equals(userid))
                 .ToListAsync();
         }
 
@@ -26,7 +26,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
             return await _context.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Book)
-                .FirstOrDefaultAsync(o => o.Id.Equals(id));
+                .FirstOrDefaultAsync(o => o.Id.ToString().Equals(id));
         }
 
         public async Task<IEnumerable<Order>> GetOrders()

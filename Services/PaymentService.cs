@@ -21,7 +21,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             return payment;
         }
 
-        public async Task<Payment?> GetPaymentDetailAsync(long id)
+        public async Task<Payment?> GetPaymentDetailAsync(string id)
         {
             return await _paymentRepository.GetPaymentDetailAsync(id);
         }

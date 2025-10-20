@@ -24,12 +24,14 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             return await _orderRepository.GetOrderDetailAsync(id);
         }
 
-        public async Task UpdateOrderStatusAsync(long id, string status)
+        public async Task UpdateOrderStatusAsync(string id, string status)
         {
-            var order = await _orderRepository.GetByIdAsync(id);
+            if (!long.TryParse(id, out var orderId))
+                throw new ArgumentException("Invalid order ID format.");
+
+            var order = await _orderRepository.GetByIdAsync(orderId);
             if (order == null)
                 throw new Exception("Order not found!");
-            
             order.OrderStatus = status;
             await _orderRepository.UpdateAsync(order);
             await _context.SaveChangesAsync();
@@ -39,5 +41,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
         {
             return await _orderRepository.GetOrders();
         }
+
+       
     }
 }

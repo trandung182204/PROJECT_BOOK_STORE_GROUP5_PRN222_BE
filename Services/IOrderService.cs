@@ -7,6 +7,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
         Task<IEnumerable<Order>> GetOrders();
         Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId);
         Task<Order?> GetOrderDetailAsync(string id);
-        Task UpdateOrderStatusAsync(long id, string status);
+        Task UpdateOrderStatusAsync(string id, string status);
     }
 }

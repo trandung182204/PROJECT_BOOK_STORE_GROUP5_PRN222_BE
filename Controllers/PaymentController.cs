@@ -26,7 +26,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
 
         // GET /api/payments/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPaymentDetail(long id)
+        public async Task<IActionResult> GetPaymentDetail(string id)
         {
             var payment = await _paymentService.GetPaymentDetailAsync(id);
             if (payment == null)

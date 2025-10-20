@@ -12,11 +12,11 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
             _context = context;
         }
 
-        public async Task<Payment?> GetPaymentDetailAsync(long id)
+        public async Task<Payment?> GetPaymentDetailAsync(string id)
         {
             return await _context.Payments
                 .Include(p => p.Order)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id.ToString().Equals(id));
         }
     }
 }
