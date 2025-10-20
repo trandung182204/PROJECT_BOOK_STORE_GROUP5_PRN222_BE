@@ -418,6 +418,9 @@ FodyWeavers.xsd
 *.msp
 
 # ASP.NET Core configuration files
-appsettings.json
-appsettings.*.json
+appsettings.Development.json
+appsettings.Production.json
 
+docker-compose.yml
+Dockerfile
+.idea/

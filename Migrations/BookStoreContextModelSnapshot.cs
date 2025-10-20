@@ -17,10 +17,265 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "8.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AvatarUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.ActivityLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Action")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("action");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<string>("Detail")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("detail");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("PK__activity__3213E83F44BC0CF2");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("activity_logs", (string)null);
+                });
 
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Book", b =>
                 {
@@ -46,7 +301,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("(getdate())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)")
@@ -56,10 +311,16 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnType("decimal(12, 2)")
                         .HasColumnName("discount_price");
 
-                    b.Property<string>("ImageUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasColumnName("image_url");
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Isbn")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("isbn");
 
                     b.Property<string>("Language")
                         .HasMaxLength(100)
@@ -74,10 +335,9 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnType("decimal(12, 2)")
                         .HasColumnName("price");
 
-                    b.Property<string>("PrintType")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("print_type");
+                    b.Property<int?>("PublicationYear")
+                        .HasColumnType("int")
+                        .HasColumnName("publication_year");
 
                     b.Property<string>("Publisher")
                         .HasMaxLength(255)
@@ -85,10 +345,9 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnName("publisher");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)")
                         .HasDefaultValue("ACTIVE")
                         .HasColumnName("status");
 
@@ -110,15 +369,13 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnName("title");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("(NULL)");
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Id")
-                        .HasName("PK__books__3213E83F67728AE1");
+                        .HasName("PK__books__3213E83F4DF6C76A");
 
-                    b.HasIndex(new[] { "Code" }, "UQ__books__357D4CF9E0A42EA1")
+                    b.HasIndex(new[] { "Code" }, "UQ__books__357D4CF97308C31E")
                         .IsUnique();
 
                     b.ToTable("books", (string)null);
@@ -142,13 +399,52 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnName("category_id");
 
                     b.HasKey("Id")
-                        .HasName("PK__book_cat__3213E83F8E00D2F5");
+                        .HasName("PK__book_cat__3213E83FE0577D5F");
 
                     b.HasIndex("BookId");
 
                     b.HasIndex("CategoryId");
 
                     b.ToTable("book_categories", (string)null);
+                });
+
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.BookImage", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BookId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("book_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("image_url");
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.HasKey("Id")
+                        .HasName("PK__book_ima__3213E83FC20644AB");
+
+                    b.HasIndex("BookId");
+
+                    b.ToTable("book_images", (string)null);
                 });
 
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Cart", b =>
@@ -164,14 +460,20 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("(getdate())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("PK__carts__3213E83FA9386628");
+                        .HasName("PK__carts__3213E83F578BC5AC");
 
                     b.HasIndex("UserId");
 
@@ -195,14 +497,20 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("cart_id");
 
-                    b.Property<int?>("Quantity")
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<int>("Quantity")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(1)
                         .HasColumnName("quantity");
 
                     b.HasKey("Id")
-                        .HasName("PK__cart_ite__3213E83F126BE46B");
+                        .HasName("PK__cart_ite__3213E83F114ACDC6");
 
                     b.HasIndex("BookId");
 
@@ -232,19 +540,74 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("category_name");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("parent_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("PK__categori__3213E83FE19B44D3");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex(new[] { "CategoryCode" }, "UQ__categori__BC9D1E7C9E5F56CE")
+                        .IsUnique();
+
+                    b.ToTable("categories", (string)null);
+                });
+
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.InventoryLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BookId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("book_id");
+
+                    b.Property<string>("ChangeType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("change_type");
+
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("(getdate())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("note");
+
+                    b.Property<int>("QuantityChange")
+                        .HasColumnType("int")
+                        .HasColumnName("quantity_change");
 
                     b.HasKey("Id")
-                        .HasName("PK__categori__3213E83F3D6EB9C1");
+                        .HasName("PK__inventor__3213E83F683E428A");
 
-                    b.HasIndex(new[] { "CategoryCode" }, "UQ__categori__BC9D1E7CDD7A9C13")
-                        .IsUnique();
+                    b.HasIndex("BookId");
 
-                    b.ToTable("categories", (string)null);
+                    b.ToTable("inventory_logs", (string)null);
                 });
 
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Order", b =>
@@ -260,10 +623,9 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("(getdate())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("OrderStatus")
-                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)")
@@ -271,7 +633,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnName("order_status");
 
                     b.Property<string>("PaymentMethod")
-                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)")
@@ -279,7 +640,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnName("payment_method");
 
                     b.Property<string>("PaymentStatus")
-                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)")
@@ -287,7 +647,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnName("payment_status");
 
                     b.Property<string>("ShippingAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("shipping_address");
 
@@ -301,12 +660,16 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnType("decimal(12, 2)")
                         .HasColumnName("total_amount");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("PK__orders__3213E83F738531E8");
+                        .HasName("PK__orders__3213E83FCA8A3B67");
 
                     b.HasIndex("UserId");
 
@@ -326,11 +689,17 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("book_id");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint")
                         .HasColumnName("order_id");
 
-                    b.Property<int?>("Quantity")
+                    b.Property<int>("Quantity")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(1)
@@ -341,7 +710,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnName("unit_price");
 
                     b.HasKey("Id")
-                        .HasName("PK__order_it__3213E83F5C6D1A1D");
+                        .HasName("PK__order_it__3213E83FB8B6104F");
 
                     b.HasIndex("BookId");
 
@@ -363,24 +732,26 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnType("decimal(12, 2)")
                         .HasColumnName("amount");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint")
                         .HasColumnName("order_id");
 
                     b.Property<DateTime?>("PaidAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasColumnName("paid_at")
-                        .HasDefaultValueSql("(NULL)");
+                        .HasColumnName("paid_at");
 
                     b.Property<string>("PaymentMethod")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)")
                         .HasColumnName("payment_method");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)")
@@ -393,11 +764,45 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasColumnName("transaction_id");
 
                     b.HasKey("Id")
-                        .HasName("PK__payments__3213E83FF91DD0E9");
+                        .HasName("PK__payments__3213E83F33F279F1");
 
                     b.HasIndex("OrderId");
 
                     b.ToTable("payments", (string)null);
+                });
+
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExpiredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IssuedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("JwtId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshToken");
                 });
 
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Review", b =>
@@ -421,18 +826,24 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("(getdate())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
 
                     b.Property<int?>("Rating")
                         .HasColumnType("int")
                         .HasColumnName("rating");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("PK__reviews__3213E83FC6757D82");
+                        .HasName("PK__reviews__3213E83F321C133F");
 
                     b.HasIndex("BookId");
 
@@ -441,7 +852,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                     b.ToTable("reviews", (string)null);
                 });
 
-            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.User", b =>
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Voucher", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -450,76 +861,129 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("address");
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("code");
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("(getdate())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("DiscountType")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("email");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasColumnName("discount_type");
 
-                    b.Property<string>("Fullname")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("fullname");
+                    b.Property<decimal>("DiscountValue")
+                        .HasColumnType("decimal(12, 2)")
+                        .HasColumnName("discount_value");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("password_hash");
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date")
+                        .HasColumnName("end_date");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("phone_number");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
+                    b.Property<decimal?>("MinOrderValue")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasDefaultValue("CUSTOMER")
-                        .HasColumnName("role");
+                        .HasColumnType("decimal(12, 2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("min_order_value");
+
+                    b.Property<DateOnly?>("StartDate")
+                        .HasColumnType("date")
+                        .HasColumnName("start_date");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)")
                         .HasDefaultValue("ACTIVE")
                         .HasColumnName("status");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<int?>("UsageLimit")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("(NULL)");
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("usage_limit");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("username");
+                    b.Property<int?>("UsedCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("used_count");
 
                     b.HasKey("Id")
-                        .HasName("PK__users__3213E83F83CF44CE");
+                        .HasName("PK__vouchers__3213E83FC517A450");
 
-                    b.HasIndex(new[] { "Email" }, "UQ__users__AB6E6164C519C7E3")
+                    b.HasIndex(new[] { "Code" }, "UQ__vouchers__357D4CF9530AC207")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "Username" }, "UQ__users__F3DBC57266717BA7")
-                        .IsUnique();
+                    b.ToTable("vouchers", (string)null);
+                });
 
-                    b.ToTable("users", (string)null);
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.ActivityLog", b =>
+                {
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", "User")
+                        .WithMany("ActivityLogs")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK_activity_logs_user");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.BookCategory", b =>
@@ -529,26 +993,38 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__book_cate__book___45BE5BA9");
+                        .HasConstraintName("FK_book_categories_book");
 
                     b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Category", "Category")
                         .WithMany("BookCategories")
                         .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__book_cate__categ__46B27FE2");
+                        .HasConstraintName("FK_book_categories_category");
 
                     b.Navigation("Book");
 
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.BookImage", b =>
+                {
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Book", "Book")
+                        .WithMany("BookImages")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_book_images_book");
+
+                    b.Navigation("Book");
+                });
+
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Cart", b =>
                 {
-                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.User", "User")
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", "User")
                         .WithMany("Carts")
                         .HasForeignKey("UserId")
-                        .IsRequired()
-                        .HasConstraintName("FK__carts__user_id__1CBC4616");
+                        .HasConstraintName("FK_carts_user");
 
                     b.Navigation("User");
                 });
@@ -560,26 +1036,48 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__cart_item__book___2180FB33");
+                        .HasConstraintName("FK_cart_items_book");
 
                     b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Cart", "Cart")
                         .WithMany("CartItems")
                         .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__cart_item__cart___208CD6FA");
+                        .HasConstraintName("FK_cart_items_cart");
 
                     b.Navigation("Book");
 
                     b.Navigation("Cart");
                 });
 
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Category", b =>
+                {
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Category", "Parent")
+                        .WithMany("InverseParent")
+                        .HasForeignKey("ParentId")
+                        .HasConstraintName("FK_categories_parent");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.InventoryLog", b =>
+                {
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Book", "Book")
+                        .WithMany("InventoryLogs")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_inventory_logs_book");
+
+                    b.Navigation("Book");
+                });
+
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Order", b =>
                 {
-                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.User", "User")
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .IsRequired()
-                        .HasConstraintName("FK__orders__user_id__2BFE89A6");
+                        .HasConstraintName("FK_orders_user");
 
                     b.Navigation("User");
                 });
@@ -589,15 +1087,16 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                     b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Book", "Book")
                         .WithMany("OrderItems")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__order_ite__book___30C33EC3");
+                        .HasConstraintName("FK_order_items_book");
 
                     b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__order_ite__order__2FCF1A8A");
+                        .HasConstraintName("FK_order_items_order");
 
                     b.Navigation("Book");
 
@@ -609,10 +1108,20 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                     b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Order", "Order")
                         .WithMany("Payments")
                         .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__payments__order___4F47C5E3");
+                        .HasConstraintName("FK_payments_order");
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.RefreshToken", b =>
+                {
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Review", b =>
@@ -622,24 +1131,38 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__reviews__book_id__540C7B00");
+                        .HasConstraintName("FK_reviews_book");
 
-                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.User", "User")
+                    b.HasOne("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("UserId")
-                        .IsRequired()
-                        .HasConstraintName("FK__reviews__user_id__55009F39");
+                        .HasConstraintName("FK_reviews_user");
 
                     b.Navigation("Book");
 
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Data.ApplicationUser", b =>
+                {
+                    b.Navigation("ActivityLogs");
+
+                    b.Navigation("Carts");
+
+                    b.Navigation("Orders");
+
+                    b.Navigation("Reviews");
+                });
+
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Book", b =>
                 {
                     b.Navigation("BookCategories");
 
+                    b.Navigation("BookImages");
+
                     b.Navigation("CartItems");
+
+                    b.Navigation("InventoryLogs");
 
                     b.Navigation("OrderItems");
 
@@ -654,6 +1177,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Category", b =>
                 {
                     b.Navigation("BookCategories");
+
+                    b.Navigation("InverseParent");
                 });
 
             modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.Order", b =>
@@ -661,15 +1186,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Migrations
                     b.Navigation("OrderItems");
 
                     b.Navigation("Payments");
-                });
-
-            modelBuilder.Entity("PROJECT_BOOK_STORE_GROUP5_PRN222.Models.User", b =>
-                {
-                    b.Navigation("Carts");
-
-                    b.Navigation("Orders");
-
-                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }
