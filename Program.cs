@@ -15,7 +15,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
     {
         public static async Task Main(string[] args)
         {
-            
+
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddCors(options =>
@@ -42,6 +42,10 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
             builder.Services.AddScoped<ICheckoutService, CheckoutService>();
             builder.Services.AddScoped<IVnPayService, VnPayService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
@@ -50,6 +54,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
 
             builder.Services.AddHostedService<RefreshTokenCleanupService>();
             builder.Services.AddEndpointsApiExplorer();
+
+            // bật chức năng "Authorize" trên swagger UI
             builder.Services.AddSwaggerGen(option =>
             {
                 option.SwaggerDoc("v1", new OpenApiInfo { Title = "Book Store API", Version = "v1" });
@@ -128,9 +134,9 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
 
 
             app.MapControllers();
-            
+
             app.Run();
-            
+
 
         }
     }
