@@ -1,196 +1,101 @@
-﻿    using Microsoft.EntityFrameworkCore;
-    using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
-    using PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
+using PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories;
 
-    namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
+namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
+{
+    public class BookService : IBookService
     {
-        public class BookService : IBookService
+        private readonly IBaseRepository<Book> baseRepository;
+
+        public BookService(IBaseRepository<Book> baseRepository)
         {
-            private readonly IBaseRepository<Book> _baseRepository;
-            private readonly BookStoreContext _context;
+            this.baseRepository = baseRepository;
+        }
 
-            public BookService(IBaseRepository<Book> baseRepository, BookStoreContext context)
-            {
-                _baseRepository = baseRepository;
-                _context = context;
-            }
+        public async Task AddBookAsync(Book book)
+        {
+            // Validate input
+            if (book == null)
+                throw new ArgumentNullException(nameof(book), "Book cannot be null.");
 
-            // ✅ Thêm sách mới
-            public async Task<ApiRespone> AddBookAsync(BookDTO book)
-            {
-                try
-                {
-                    if (book == null)
-                        return new ApiRespone { Succeeded = false, Message = "Book cannot be null." };
-                    if (string.IsNullOrWhiteSpace(book.Code))
-                        return new ApiRespone { Succeeded = false, Message = "Book code is required." };
-                    if (string.IsNullOrWhiteSpace(book.Title))
-                        return new ApiRespone { Succeeded = false, Message = "Book title is required." };
-                    if (string.IsNullOrWhiteSpace(book.Author))
-                        return new ApiRespone { Succeeded = false, Message = "Book author is required." };
-                    if (book.Price <= 0)
-                        return new ApiRespone { Succeeded = false, Message = "Book price must be greater than 0." };
-                    if (book.StockQuantity < 0)
-                        return new ApiRespone { Succeeded = false, Message = "Book quantity cannot be negative." };
+            if (string.IsNullOrWhiteSpace(book.Title))
+                throw new ArgumentException("Book title cannot be empty.");
 
-                    // Kiểm tra trùng code
-                    var exists = await _context.Books.AnyAsync(b => b.Code == book.Code && b.IsDeleted == false);
-                    if (exists)
-                        return new ApiRespone { Succeeded = false, Message = "Book code already exists." };
+            if (string.IsNullOrWhiteSpace(book.Author))
+                throw new ArgumentException("Book author cannot be empty.");
 
-                    var newBook = new Book
-                    {
-                        Code = book.Code.Trim(),
-                        Title = book.Title.Trim(),
-                        Author = book.Author?.Trim(),
-                        Publisher = book.Publisher,
-                        Isbn = book.Isbn,
-                        PublicationYear = book.PublicationYear,
-                        PageCount = book.PageCount,
-                        Language = book.Language,
-                        Description = book.Description,
-                        Price = book.Price,
-                        DiscountPrice = book.DiscountPrice,
-                        StockQuantity = book.StockQuantity,
-                        ThumbnailUrl = book.ThumbnailUrl,
-                        Status = book.Status ?? "ACTIVE",
-                        IsDeleted = false
-                    };
+            if (book.Price <= 0)
+                throw new ArgumentException("Book price must be greater than 0.");
 
-                    await _baseRepository.AddAsync(newBook);
+            if (book.StockQuantity < 0)
+                throw new ArgumentException("Book quantity cannot be negative.");
 
-                    return new ApiRespone
-                    {
-                        Succeeded = true,
-                        Message = "Book added successfully.",
-                        Data = newBook
-                    };
-                }
-                catch (Exception ex)
-                {
-                    return new ApiRespone { Succeeded = false, Message = $"Error: {ex.Message}", Data = null };
-                }
-            }
+            await baseRepository.AddAsync(book);
+        }
 
-            // ✅ Cập nhật sách
-            public async Task<ApiRespone> UpdateBookAsync(long id, BookDTO book)
-            {
-                try
-                {
-                    if (book == null)
-                        return new ApiRespone { Succeeded = false, Message = "Book cannot be null." };
+        public async Task DeleteBookAsync(long id)
+        {
+            if (id <= 0)
+                throw new ArgumentException("Invalid book ID.");
 
-                    var existing = await _baseRepository.GetByIdAsync(id);
-                    if (existing == null || existing.IsDeleted == true)
-                        return new ApiRespone { Succeeded = false, Message = "Book not found." };
+            var book = await baseRepository.GetByIdAsync(id);
+            if (book == null)
+                throw new KeyNotFoundException($"Book with ID {id} not found.");
 
-                    // Kiểm tra trùng code (trừ chính nó)
-                    var exists = await _context.Books.AnyAsync(b => b.Code == book.Code && b.Id != id && b.IsDeleted == false);
-                    if (exists)
-                        return new ApiRespone { Succeeded = false, Message = "Book code already exists." };
+            book.Status = "INACTIVE";
+            await baseRepository.UpdateAsync(book);
+        }
 
-                    existing.Code = book.Code.Trim();
-                    existing.Title = book.Title.Trim();
-                    existing.Author = book.Author?.Trim();
-                    existing.Publisher = book.Publisher;
-                    existing.Isbn = book.Isbn;
-                    existing.PublicationYear = book.PublicationYear;
-                    existing.PageCount = book.PageCount;
-                    existing.Language = book.Language;
-                    existing.Description = book.Description;
-                    existing.Price = book.Price;
-                    existing.DiscountPrice = book.DiscountPrice;
-                    existing.StockQuantity = book.StockQuantity;
-                    existing.ThumbnailUrl = book.ThumbnailUrl;
-                    existing.Status = book.Status ?? existing.Status;
-                    existing.UpdatedAt = DateTime.Now;
+        public async Task<IEnumerable<Book>> GetAllBookAsync()
+        {
+            var books = await baseRepository.GetAllAsync();
+            if (books == null || !books.Any())
+                throw new InvalidOperationException("No books available.");
 
-                    await _baseRepository.UpdateAsync(existing);
+            return books;
+        }
 
-                    return new ApiRespone
-                    {
-                        Succeeded = true,
-                        Message = "Book updated successfully.",
-                        Data = existing
-                    };
-                }
-                catch (Exception ex)
-                {
-                    return new ApiRespone { Succeeded = false, Message = $"Error: {ex.Message}", Data = null };
-                }
-            }
+        public async Task<Book?> GetBookByIdAsync(long id)
+        {
+            if (id <= 0)
+                throw new ArgumentException("Invalid book ID.");
 
-            // ✅ Xóa (mềm) sách
-            public async Task<ApiRespone> DeleteBookAsync(long id)
-            {
-                try
-                {
-                    var book = await _baseRepository.GetByIdAsync(id);
-                    if (book == null)
-                        return new ApiRespone { Succeeded = false, Message = "Book not found." };
-                if (book.IsDeleted == true && book.Status == "INACTIVE")
-                    return new ApiRespone { Succeeded = false, Message = "Book was deleted." };
+            var book = await baseRepository.GetByIdAsync(id);
+            if (book == null)
+                throw new KeyNotFoundException($"Book with ID {id} not found.");
 
-                book.IsDeleted = true;
-                    book.Status = "INACTIVE";
-                    book.UpdatedAt = DateTime.Now;
+            return book;
+        }
 
-                    await _baseRepository.UpdateAsync(book);
+        public async Task UpdateBookAsync(Book book)
+        {
+            if (book == null)
+                throw new ArgumentNullException(nameof(book), "Book cannot be null.");
 
-                    return new ApiRespone
-                    {
-                        Succeeded = true,
-                        Message = "Book deleted successfully.",
-                        Data = book
-                    };
-                }
-                catch (Exception ex)
-                {
-                    return new ApiRespone { Succeeded = false, Message = $"Error: {ex.Message}", Data = null };
-                }
-            }
+            if (book.Id <= 0)
+                throw new ArgumentException("Invalid book ID.");
 
-            // ✅ Lấy tất cả sách
-            public async Task<ApiRespone> GetAllBookAsync()
-            {
-                try
-                {
-                    var books = await _baseRepository.GetAllAsync();
-                    var activeBooks = books.Where(b => b.IsDeleted == false).ToList();
+            if (string.IsNullOrWhiteSpace(book.Title))
+                throw new ArgumentException("Book title cannot be empty.");
 
-                    return new ApiRespone
-                    {
-                        Succeeded = true,
-                        Message = activeBooks.Any() ? "Books retrieved successfully." : "No books available.",
-                        Data = activeBooks
-                    };
-                }
-                catch (Exception ex)
-                {
-                    return new ApiRespone { Succeeded = false, Message = $"Error: {ex.Message}", Data = null };
-                }
-            }
+            if (string.IsNullOrWhiteSpace(book.Author))
+                throw new ArgumentException("Book author cannot be empty.");
 
-            // ✅ Lấy sách theo ID
-            public async Task<ApiRespone> GetBookByIdAsync(long id)
-            {
-                try
-                {
-                    var book = await _baseRepository.GetByIdAsync(id);
-                    if (book == null || book.IsDeleted == true)
-                        return new ApiRespone { Succeeded = false, Message = "Book not found.", Data = null };
+            if (book.Price <= 0)
+                throw new ArgumentException("Book price must be greater than 0.");
 
-                    return new ApiRespone
-                    {
-                        Succeeded = true,
-                        Message = "Book retrieved successfully.",
-                        Data = book
-                    };
-                }
-                catch (Exception ex)
-                {
-                    return new ApiRespone { Succeeded = false, Message = $"Error: {ex.Message}", Data = null };
-                }
-            }
+            if (book.StockQuantity < 0)
+                throw new ArgumentException("Book quantity cannot be negative.");
+
+            var existing = await baseRepository.GetByIdAsync(book.Id);
+            if (existing == null)
+                throw new KeyNotFoundException($"Book with ID {book.Id} not found.");
+
+            await baseRepository.UpdateAsync(book);
         }
     }
+}

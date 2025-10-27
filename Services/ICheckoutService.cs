@@ -5,9 +5,9 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
 {
     public interface ICheckoutService
     {
-        Task<ApiResponse> CreateOrderCODAsync(string userId, string address, string note);
-        Task<ApiResponse> CreateVnPayPaymentUrlAsync(string userId);
-        Task<ApiResponse> HandleVnPayReturnAsync(VnPayReturnRequest request);
-        Task<ApiResponse> GetCheckoutSummaryAsync(string userId);
+        Task<Order> CreateOrderCODAsync(string userId, string address, string note);
+        Task<string> CreateVnPayPaymentUrlAsync(string userId);
+        Task<object> HandleVnPayReturnAsync(VnPayReturnRequest request);
+        Task<object> GetCheckoutSummaryAsync(string userId);
     }
 }
