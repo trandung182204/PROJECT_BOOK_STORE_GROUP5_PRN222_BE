@@ -35,7 +35,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
                         System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
                     options.JsonSerializerOptions.WriteIndented = true;
                 });
-
+            builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+            builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IBookService, BookService>();
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<ICartService, CartService>();
