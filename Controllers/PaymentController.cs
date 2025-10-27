@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using Azure.Core;
-using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Services;
@@ -20,36 +18,21 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
 
         // POST /api/payments
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> CreatePayment([FromBody] Payment payment)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var currentRole = User.FindFirstValue(ClaimTypes.Role);
-            if (currentRole != "Customer" || payment.Order.User.Id != currentUserId)
-            {
-                return Ok(new { message = "You are not allowed to access this payment." });
-            }
             var created = await _paymentService.CreatePaymentAsync(payment);
             return Ok(new { message = "Payment created successfully!", payment = created });
         }
 
         // GET /api/payments/{id}
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<IActionResult> GetPaymentDetail(string id)
         {
-            var currentRole = User.FindFirstValue(ClaimTypes.Role);
-            if (!(currentRole == "Admin" || currentRole == "Staff"))
-            {
-                return Ok(new { message = "You are not allowed to access payments." });
-            }
-            else
-            {
-                var payment = await _paymentService.GetPaymentDetailAsync(id);
-                if (payment == null)
-                    return NotFound(new { message = "Payment not found!" });
-                return Ok(payment);
-            }
+            var payment = await _paymentService.GetPaymentDetailAsync(id);
+            if (payment == null)
+                return NotFound(new { message = "Payment not found!" });
+
+            return Ok(payment);
         }
 
         // POST /api/payments/webhook
