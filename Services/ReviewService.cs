@@ -54,7 +54,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
                 Comment = comment,
                 CreatedAt = DateTime.UtcNow
             };
-<<<<<<< HEAD
             try
             {
                 await _review.AddAsync(review); // repository AddAsync
@@ -73,7 +72,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
                     Message = $"Failed to add review: {ex.Message}"
                 };
             }
-=======
             await _review.AddAsync(review);
             return new ApiResponse
             {
@@ -81,7 +79,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
                 Message = "success",
                 Data = review
             };
->>>>>>> developer
         }
 
         public async Task<ApiResponse> DeleteReviewAsync(long id, string userId)

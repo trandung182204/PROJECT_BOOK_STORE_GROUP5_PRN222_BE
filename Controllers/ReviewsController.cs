@@ -31,7 +31,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         public async Task<IActionResult> AddReview(long bookId, [FromBody] ReviewDto dto)
         {
 
-<<<<<<< HEAD
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized("User not authenticated.");
@@ -41,12 +40,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
             if (!result.Succeeded)
                 return BadRequest(result);
 
-            return Ok(result);
-
-=======
             return Ok(await _reviewService.AddReviewAsync(bookId, dto.UserId, dto.rating, dto.comment));
-        
->>>>>>> developer
+
         }
         // tương tự
         [HttpPut("review/{id}")]
