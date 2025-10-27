@@ -15,5 +15,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
 
         // Lấy sách theo category
         Task<IEnumerable<Book>> GetBooksByCategoryIdAsync(long categoryId);
+
+        Task<Book?> GetByIsbnOrCodeAsync(string isbnOrCode);
+        Task AddIfNotExistsAsync(Book book);
     }
 }

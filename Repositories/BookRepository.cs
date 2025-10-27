@@ -43,5 +43,22 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Book?> GetByIsbnOrCodeAsync(string isbnOrCode)
+        {
+            return await _context.Books
+                .FirstOrDefaultAsync(b => b.Isbn == isbnOrCode || b.Code == isbnOrCode);
+        }
+
+        public async Task AddIfNotExistsAsync(Book book)
+        {
+            var existing = await _context.Books
+                .FirstOrDefaultAsync(b => b.Isbn == book.Isbn || b.Code == book.Code);
+
+            if (existing == null)
+            {
+                _context.Books.Add(book);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }
