@@ -11,17 +11,15 @@ public class CartService : ICartService
         _context = context;
     }
 
-    public async Task<ApiResponse> GetCartByUserIdAsync(string userId)
+    public async Task<Cart> GetCartByUserIdAsync(string userId)
     {
-        return new ApiResponse
-        {
-            Succeeded = true,
-            Message = "Get cart successfully",
-            Data = await _context.Carts.Include(c => c.CartItems).ThenInclude(ci => ci.Book).FirstOrDefaultAsync(c => c.UserId == userId)
-        };
+        return await _context.Carts
+            .Include(c => c.CartItems)
+            .ThenInclude(ci => ci.Book)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
     }
 
-    public async Task<ApiResponse> AddCartAsync(string userId, long bookId, int quantity)
+    public async Task<Cart> AddCartAsync(string userId, long bookId, int quantity)
     {
         var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
         if (cart == null)
@@ -42,36 +40,19 @@ public class CartService : ICartService
         }
 
         await _context.SaveChangesAsync();
-        return new ApiResponse
-        {
-            Succeeded = true,
-            Message = "Add cart successfully",
-            Data = cart
-        };
+        return cart;
     }
 
-    public async Task<ApiResponse> UpdateCartItemQuantityAsync(long itemId, int quantity)
+    public async Task<CartItem> UpdateCartItemQuantityAsync(long itemId, int quantity)
     {
         var item = await _context.CartItems.FindAsync(itemId);
-        if (item == null)
-            return new ApiResponse
-            {
-                Succeeded = false,
-                Message = "invalid itemId",
-            };
-
+        if (item == null) throw new Exception("Item not found");
         item.Quantity = quantity;
         await _context.SaveChangesAsync();
-
-        return new ApiResponse
-        {
-            Succeeded = true,
-            Message = "Update cart item quantity successfully",
-            Data = item
-        };
+        return item;
     }
 
-    public async Task<ApiResponse> DeleteCartItemAsync(long itemId)
+    public async Task DeleteCartItemAsync(long itemId)
     {
         var item = await _context.CartItems.FindAsync(itemId);
         if (item != null)
@@ -79,14 +60,9 @@ public class CartService : ICartService
             _context.CartItems.Remove(item);
             await _context.SaveChangesAsync();
         }
-        return new ApiResponse
-        {
-            Succeeded = true,
-            Message = "Delete cart item successfully"
-        };
     }
 
-    public async Task<ApiResponse> ClearCartAsync(string userId)
+    public async Task ClearCartAsync(string userId)
     {
         var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
         if (cart != null)
@@ -95,10 +71,5 @@ public class CartService : ICartService
             _context.CartItems.RemoveRange(items);
             await _context.SaveChangesAsync();
         }
-        return new ApiResponse
-        {
-            Succeeded = true,
-            Message = "Clear cart successfully"
-        };
     }
 }

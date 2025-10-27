@@ -1,10 +1,8 @@
-﻿using System;
-using System.Security.Policy;
-using System.Web;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.ViewModels;
+using System.Web;
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
 {
@@ -21,7 +19,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             _vnPayService = vnPayService;
         }
 
-        public async Task<ApiResponse> GetCheckoutSummaryAsync(string userId)
+        public async Task<object> GetCheckoutSummaryAsync(string userId)
         {
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
@@ -35,19 +33,15 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             decimal shipping = subtotal > 500000 ? 0 : 20000;
             decimal total = subtotal + shipping;
 
-            return new ApiResponse
+            return new
             {
-                Succeeded = true,
-                Message = "Get checkout summary successful!",
-                Data = new {
-                    Subtotal = subtotal,
-                    Shipping = shipping,
-                    Total = total
-                }
+                Subtotal = subtotal,
+                Shipping = shipping,
+                Total = total
             };
         }
 
-        public async Task<ApiResponse> CreateOrderCODAsync(string userId, string address, string note)
+        public async Task<Order> CreateOrderCODAsync(string userId, string address, string note)
         {
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
@@ -86,15 +80,10 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             await _context.SaveChangesAsync();
             await ClearCartAsync(cart);
 
-            return new ApiResponse
-            {
-                Succeeded = true,
-                Message = "Create Order COD successful!",
-                Data = order
-            };
+            return order;
         }
 
-        public async Task<ApiResponse> CreateVnPayPaymentUrlAsync(string userId)
+        public async Task<string> CreateVnPayPaymentUrlAsync(string userId)
         {
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
@@ -121,25 +110,16 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             await _context.SaveChangesAsync();
 
             string url = _vnPayService.CreatePaymentUrl(order.Id.ToString(), grandTotal, $"Thanh toan don hang #{order.Id}");
-            return new ApiResponse
-            {
-                Succeeded = true,
-                Message = "Create VNPAY payment url successful!",
-                Data = url
-            };
+            return url;
         }
 
-        public async Task<ApiResponse> HandleVnPayReturnAsync(VnPayReturnRequest request)
+        public async Task<object> HandleVnPayReturnAsync(VnPayReturnRequest request)
         {
             long orderId = long.Parse(request.vnp_TxnRef);
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (order == null)
-                return new ApiResponse
-                {
-                    Succeeded = false,
-                    Message = "Handel VnPay Return uncessful, order is invalid",
-                };
+                return new { success = false, message = "Order not found" };
 
             var responseDict = request.GetType()
                 .GetProperties()
@@ -149,11 +129,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             bool valid = _vnPayService.ValidateSignature(responseDict, request.vnp_SecureHash);
 
             if (!valid)
-                return new ApiResponse
-                {
-                    Succeeded = false,
-                    Message = "Validate Signature uncessful",
-                };
+                return new { success = false, message = "Sai chữ ký từ VNPAY" };
 
             if (request.vnp_ResponseCode == "00")
             {
@@ -172,20 +148,12 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
                 });
 
                 await _context.SaveChangesAsync();
-                return new ApiResponse
-                {
-                    Succeeded = true,
-                    Message = "Create Payment Successful"
-                };
+                return new { success = true, message = "Payment successful", orderId = order.Id };
             }
 
             order.PaymentStatus = "FAILED";
             await _context.SaveChangesAsync();
-            return new ApiResponse
-            {
-                Succeeded = false,
-                Message = " Payment failed"
-            };
+            return new { success = false, message = "Payment failed" };
         }
 
         private async Task ClearCartAsync(Cart cart)
