@@ -39,8 +39,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
             builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IBookService, BookService>();
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-            builder.Services.AddScoped<IReviewService, ReviewService>();
-            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
@@ -52,8 +50,13 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IBookRepository, BookRepository>();
+            builder.Services.AddHttpClient();
+            builder.Services.AddScoped<GoogleBooksService>();
 
             builder.Services.AddHostedService<RefreshTokenCleanupService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(option =>
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 
@@ -19,9 +20,10 @@ public partial class Category
 
     public DateTime? UpdatedAt { get; set; }
 
+    [JsonIgnore]
     public virtual ICollection<BookCategory> BookCategories { get; set; } = new List<BookCategory>();
-
+    [JsonIgnore]
     public virtual ICollection<Category> InverseParent { get; set; } = new List<Category>();
-
+    [JsonIgnore]
     public virtual Category? Parent { get; set; }
 }
