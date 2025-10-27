@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Helpers;
@@ -13,56 +11,71 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        private readonly IBookService bookService;
+        private readonly IBookService _bookService;
 
         public BookController(IBookService bookService)
         {
-            this.bookService = bookService;
+            _bookService = bookService;
         }
 
+        // Lấy tất cả sách
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await bookService.GetAllBookAsync());
+            var response = await _bookService.GetAllBookAsync();
+            return Ok(response);
         }
 
+        // Lấy chi tiết theo ID
         [HttpGet("{id}")]
-        [Authorize(Roles = AppRole.Customer)]
-        public async Task<IActionResult> GetById(int id)
+   
+        public async Task<IActionResult> GetById(long id)
         {
-            return Ok(await bookService.GetBookByIdAsync(id));
+            var response = await _bookService.GetBookByIdAsync(id);
+            return Ok(response);
         }
 
+        // Thêm sách mới
         [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> Create([FromBody] Book book)
+
+        public async Task<IActionResult> Create([FromBody] BookDTO book)
         {
-            await bookService.AddBookAsync(book);
-            return Ok(book);
+            var response = await _bookService.AddBookAsync(book);
+            return Ok(response);
         }
 
+        // Cập nhật sách
         [HttpPut("{id}")]
-        [Authorize]
-        public async Task<IActionResult> Update(int id, [FromBody] Book book)
+        
+        public async Task<IActionResult> Update(long id, [FromBody] BookDTO book)
         {
-            await bookService.UpdateBookAsync(book);
-            return NoContent();
+            var response = await _bookService.UpdateBookAsync(id, book);
+            return Ok(response);
         }
 
+        // Xóa sách (chuyển trạng thái INACTIVE)
         [HttpDelete("{id}")]
-        [Authorize]
-        public async Task<IActionResult> Delete(int id)
+    
+        public async Task<IActionResult> Delete(long id)
         {
-            await bookService.DeleteBookAsync(id);
-            return NoContent();
+            var response = await _bookService.DeleteBookAsync(id);
+            return Ok(response);
         }
 
+        // Tìm kiếm theo tiêu đề
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string title)
         {
-            var books = await bookService.GetAllBookAsync();
-            var result = books.Where(b => b.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
-            return Ok(result);
+            var response = await _bookService.GetAllBookAsync();
+
+            if (response.Data is IEnumerable<Book> books && !string.IsNullOrWhiteSpace(title))
+            {
+                var result = books.Where(b =>
+                    b.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+                return Ok(new ApiRespone { Succeeded = true, Message = "Search results", Data = result });
+            }
+
+            return Ok(response);
         }
     }
 }
