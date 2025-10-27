@@ -4,9 +4,9 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
 {
     public interface IOrderService
     {
-        Task<IEnumerable<Order>> GetOrders();
-        Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId);
-        Task<Order?> GetOrderDetailAsync(string id);
-        Task UpdateOrderStatusAsync(string id, string status);
+        Task<ApiResponse> GetOrders();
+        Task<ApiResponse> GetOrdersByUserIdAsync(string userId);
+        Task<ApiResponse> GetOrderDetailAsync(string id);
+        Task<ApiResponse> UpdateOrderStatusAsync(string id, string status);
     }
 }

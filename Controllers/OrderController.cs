@@ -42,7 +42,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
             if (currentRole == "Admin" || currentRole == "Staff")
             {
                 var orders = await _orderService.GetOrdersByUserIdAsync(userId);
-                return Ok(orders)
+                return Ok(orders);
                     ////ewqeq
             }
 
