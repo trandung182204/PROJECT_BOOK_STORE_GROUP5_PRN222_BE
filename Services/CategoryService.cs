@@ -18,7 +18,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             try
             {
                 var categories = await _baseRepository.GetAllAsync();
-                var active = categories.Where(c => !c.IsDeleted).ToList();
+                var active = categories.ToList();
 
                 return new ApiRespone
                 {
@@ -44,15 +44,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             try
             {
                 var category = await _baseRepository.GetByIdAsync(id);
-                if (category == null || category.IsDeleted)
-                {
-                    return new ApiRespone
-                    {
-                        Succeeded = false,
-                        Message = "Category not found.",
-                        Data = null
-                    };
-                }
+                
 
                 return new ApiRespone
                 {
@@ -127,15 +119,22 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             try
             {
                 var existing = await _baseRepository.GetByIdAsync(id);
-                if (existing == null || existing.IsDeleted)
-                    return new ApiRespone { Succeeded = false, Message = "Category not found." };
+
 
                 var exists = await ExistsAsync(category.CategoryCode, category.CategoryName, id);
                 if (exists.Succeeded && (bool)exists.Data)
-                    return new ApiRespone { Succeeded = false, Message = "CategoryCode or CategoryName already exists." };
+                {
+                    // Kiểm tra nếu code hoặc name khác với chính bản ghi đang update
+                    if (!string.Equals(existing.CategoryCode, category.CategoryCode.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        !string.Equals(existing.CategoryName, category.CategoryName.Trim(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        return new ApiRespone { Succeeded = false, Message = "CategoryCode or CategoryName already exists." };
+                    }
+                }
 
                 existing.CategoryCode = category.CategoryCode.Trim();
                 existing.CategoryName = category.CategoryName.Trim();
+                existing.IsDeleted = category.IsDeleted;
 
                 await _baseRepository.UpdateAsync(existing);
 
