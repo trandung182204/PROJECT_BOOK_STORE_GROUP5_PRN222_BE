@@ -81,9 +81,6 @@
                         return new ApiRespone { Succeeded = false, Message = "Book cannot be null." };
 
                     var existing = await _baseRepository.GetByIdAsync(id);
-                    if (existing == null || existing.IsDeleted == true)
-                        return new ApiRespone { Succeeded = false, Message = "Book not found." };
-
                     // Kiểm tra trùng code (trừ chính nó)
                     var exists = await _context.Books.AnyAsync(b => b.Code == book.Code && b.Id != id && b.IsDeleted == false);
                     if (exists)
@@ -177,8 +174,6 @@
                 try
                 {
                     var book = await _baseRepository.GetByIdAsync(id);
-                    if (book == null || book.IsDeleted == true)
-                        return new ApiRespone { Succeeded = false, Message = "Book not found.", Data = null };
 
                     return new ApiRespone
                     {
