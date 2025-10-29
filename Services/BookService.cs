@@ -132,7 +132,7 @@
                     return new ApiRespone { Succeeded = false, Message = "Book was deleted." };
 
                 book.IsDeleted = true;
-                    book.Status = "INACTIVE";
+                    book.Status = "inactive";
                     book.UpdatedAt = DateTime.Now;
 
                     await _baseRepository.UpdateAsync(book);
@@ -156,7 +156,7 @@
                 try
                 {
                     var books = await _baseRepository.GetAllAsync();
-                    var activeBooks = books.Where(b => b.IsDeleted == false).ToList();
+                    var activeBooks = books.ToList();
 
                     return new ApiRespone
                     {
