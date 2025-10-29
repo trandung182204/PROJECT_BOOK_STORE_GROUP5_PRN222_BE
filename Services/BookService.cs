@@ -128,7 +128,7 @@
                     var book = await _baseRepository.GetByIdAsync(id);
                     if (book == null)
                         return new ApiRespone { Succeeded = false, Message = "Book not found." };
-                if (book.IsDeleted == true && book.Status == "INACTIVE")
+                if (book.IsDeleted == true && book.Status == "inactive")
                     return new ApiRespone { Succeeded = false, Message = "Book was deleted." };
 
                 book.IsDeleted = true;
