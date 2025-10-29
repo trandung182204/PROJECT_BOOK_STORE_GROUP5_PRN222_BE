@@ -53,7 +53,7 @@
                         DiscountPrice = book.DiscountPrice,
                         StockQuantity = book.StockQuantity,
                         ThumbnailUrl = book.ThumbnailUrl,
-                        Status = book.Status ?? "ACTIVE",
+                        Status = book.Status ?? "active",
                         IsDeleted = false
                     };
 
