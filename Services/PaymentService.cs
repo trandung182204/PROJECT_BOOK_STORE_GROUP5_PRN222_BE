@@ -36,6 +36,16 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             };
         }
 
+        public async Task<ApiResponse> GetPayments(string? method = null, DateTime? from = null, DateTime? to = null)
+        {
+            return new ApiResponse
+            {
+                Succeeded = true,
+                Message = "Get payment success",
+                Data = await _paymentRepository.GetPayments(method, from, to)
+            };
+        }
+
         public async Task<ApiResponse> HandleWebhookAsync(string payload)
         {
             return new ApiResponse

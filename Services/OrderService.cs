@@ -24,13 +24,13 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             };
         }
 
-        public async Task<ApiResponse> GetOrders()
+        public async Task<ApiResponse> GetOrders(string? type = null, DateTime? from = null, DateTime? to = null)
         {
             return new ApiResponse
             {
                 Succeeded = true,
                 Message = "Get order success",
-                Data = await _orderRepository.GetOrders()
+                Data = await _orderRepository.GetOrders(type, from, to)
             };
         }
 

@@ -18,5 +18,30 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
                 .Include(p => p.Order)
                 .FirstOrDefaultAsync(p => p.Id.ToString().Equals(id));
         }
+
+        public async Task<IEnumerable<Payment>> GetPayments(string? paymentmethod, DateTime? from, DateTime? to)
+        {
+            var query = _context.Payments
+                .Include(p => p.Order)
+                .ThenInclude(o => o.User)
+                .AsQueryable();
+            if (!string.IsNullOrEmpty(paymentmethod))
+            {
+                query = query.Where(o => o.PaymentMethod == paymentmethod);
+            }
+
+            if (from.HasValue)
+            {
+                query = query.Where(o => o.CreatedAt >= from.Value);
+            }
+
+            if (to.HasValue)
+            {
+                var endDate = to.Value.Date.AddDays(1).AddTicks(-1);
+                query = query.Where(o => o.CreatedAt <= endDate);
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }
