@@ -19,14 +19,14 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         }
         // GET /api/orders
         [HttpGet]
-        public async Task<IActionResult> GetOrders()
+        public async Task<IActionResult> GetOrders([FromQuery] string? type = null, [FromQuery] DateTime? from = null, [FromQuery] DateTime? to = null)
         {
-            var orders = await _orderService.GetOrders();
+            var orders = await _orderService.GetOrders(type, from, to);
             return Ok(orders);
         }
         // GET /api/orders/{userId}
         [HttpGet("user/{userId}")]
-        
+        [Authorize]
         public async Task<IActionResult> GetOrdersOfUser(string userId)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -59,7 +59,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
 
         // GET /api/orders/{id}
         [HttpGet("{id}")]
-       
+        [Authorize]
         public async Task<IActionResult> GetOrderDetail(string id)
         {
             var currentRole = User.FindFirstValue(ClaimTypes.Role);
@@ -79,6 +79,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
 
         // PUT /api/orders/{id}/status
         [HttpPut("{id}/status")]
+        [Authorize]
         public async Task<IActionResult> UpdateOrderStatus(string id, [FromBody] string status)
         {
             var currentRole = User.FindFirstValue(ClaimTypes.Role);

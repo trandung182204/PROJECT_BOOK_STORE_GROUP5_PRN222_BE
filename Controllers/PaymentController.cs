@@ -18,6 +18,20 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
             _paymentService = paymentService;
         }
 
+        // Get /api/payments
+        [HttpGet]
+        //[Authorize]
+        public async Task<IActionResult> GetPayments([FromQuery] string? type = null, [FromQuery] DateTime? from = null, [FromQuery] DateTime? to = null)
+        {
+            //var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var currentRole = User.FindFirstValue(ClaimTypes.Role);
+            //if (currentRole != "Customer")
+            //{
+            //    return Ok(new { message = "You are not allowed to access this payment." });
+            //}
+            var payment = await _paymentService.GetPayments(type,from,to);
+            return Ok(payment);
+        }
         // POST /api/payments
         [HttpPost]
         [Authorize]
