@@ -131,7 +131,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
             app.UseCors("AllowAll");
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
