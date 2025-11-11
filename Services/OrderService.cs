@@ -1,4 +1,5 @@
-﻿using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories;
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
@@ -12,6 +13,75 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
         {
             _orderRepository = orderRepository;
             _context = context;
+        }
+
+        public async Task<ApiRespone> AddOrders(OrderDTO order)
+        {
+            try
+            {
+                if (order == null)
+                    return new ApiRespone { 
+                        Succeeded = false, 
+                        Message = "Book cannot be null." 
+                    };
+
+                if (string.IsNullOrWhiteSpace(order.UserId))
+                    return new ApiRespone { Succeeded = false, Message = "UserId is required." };
+
+                if (string.IsNullOrWhiteSpace(order.OrderStatus))
+                    order.OrderStatus = "PENDING"; // mặc định
+
+                if (string.IsNullOrWhiteSpace(order.PaymentStatus))
+                    order.PaymentStatus = "UNPAID"; // mặc định
+
+                if (string.IsNullOrWhiteSpace(order.PaymentMethod))
+                    return new ApiRespone { Succeeded = false, Message = "Payment method is required." };
+
+                if (string.IsNullOrWhiteSpace(order.ShippingAddress))
+                    return new ApiRespone { Succeeded = false, Message = "Shipping address is required." };
+
+                if (order.TotalAmount <= 0)
+                    return new ApiRespone { Succeeded = false, Message = "Total amount must be greater than 0." };
+
+                if (order.ShippingFee < 0)
+                    return new ApiRespone { Succeeded = false, Message = "Shipping fee cannot be negative." };
+
+                // Nếu muốn kiểm tra trùng đơn hàng theo Id
+                var exists = await _context.Orders.AnyAsync(o => o.Id == order.Id);
+                if (exists)
+                    return new ApiRespone { Succeeded = false, Message = "Order with this ID already exists." };
+
+                var newOrder = new Order
+                {
+                    UserId = order.UserId?.Trim(),
+                    OrderStatus = order.OrderStatus?.Trim(),
+                    PaymentStatus = order.PaymentStatus?.Trim(),
+                    PaymentMethod = order.PaymentMethod?.Trim(),
+                    ShippingAddress = order.ShippingAddress?.Trim(),
+                    ShippingFee = order.ShippingFee ?? 0,
+                    TotalAmount = order.TotalAmount,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+
+                await _orderRepository.AddAsync(newOrder);
+
+                return new ApiRespone
+                {
+                    Succeeded = true,
+                    Message = "Order added successfully.",
+                    Data = newOrder
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiRespone
+                {
+                    Succeeded = false,
+                    Message = $"Error: {ex.Message}",
+                    Data = null
+                };
+            }
         }
 
         public async Task<ApiResponse> GetOrderDetailAsync(string id)

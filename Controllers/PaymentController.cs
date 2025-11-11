@@ -35,13 +35,13 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         // POST /api/payments
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreatePayment([FromBody] Payment payment)
+        public async Task<IActionResult> CreatePayment([FromBody] PaymentDTO payment)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var currentRole = User.FindFirstValue(ClaimTypes.Role);
-            if (currentRole != "Customer" || payment.Order.User.Id != currentUserId)
+            if (currentRole == null || currentUserId == null)
             {
-                return Ok(new { message = "You are not allowed to access this payment." });
+                return Ok(new { message = "You are not allowed to access here." });
             }
             var created = await _paymentService.CreatePaymentAsync(payment);
             return Ok(new { message = "Payment created successfully!", payment = created });

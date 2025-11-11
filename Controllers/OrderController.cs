@@ -2,6 +2,7 @@
 using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Services;
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
@@ -22,6 +23,12 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         public async Task<IActionResult> GetOrders([FromQuery] string? type = null, [FromQuery] DateTime? from = null, [FromQuery] DateTime? to = null)
         {
             var orders = await _orderService.GetOrders(type, from, to);
+            return Ok(orders);
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateOrder([FromBody] OrderDTO order)
+        {
+            var orders = await _orderService.AddOrders(order);
             return Ok(orders);
         }
         // GET /api/orders/{userId}
