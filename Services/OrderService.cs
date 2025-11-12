@@ -14,17 +14,37 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId)
+        public async Task<ApiResponse> GetOrderDetailAsync(string id)
         {
-            return await _orderRepository.GetOrdersByUserIdAsync(userId);
+            return new ApiResponse
+            {
+                Succeeded = true,
+                Message = "Get order success",
+                Data = await _orderRepository.GetOrderDetailAsync(id)
+            };
         }
 
-        public async Task<Order?> GetOrderDetailAsync(string id)
+        public async Task<ApiResponse> GetOrders(string? type = null, DateTime? from = null, DateTime? to = null)
         {
-            return await _orderRepository.GetOrderDetailAsync(id);
+            return new ApiResponse
+            {
+                Succeeded = true,
+                Message = "Get order success",
+                Data = await _orderRepository.GetOrders(type, from, to)
+            };
         }
 
-        public async Task UpdateOrderStatusAsync(string id, string status)
+        public async Task<ApiResponse> GetOrdersByUserIdAsync(string userId)
+        {
+            return new ApiResponse
+            {
+                Succeeded = true,
+                Message = "Get order success",
+                Data = await _orderRepository.GetOrdersByUserIdAsync(userId)
+            };
+        }
+
+        public async Task<ApiResponse> UpdateOrderStatusAsync(string id, string status)
         {
             if (!long.TryParse(id, out var orderId))
                 throw new ArgumentException("Invalid order ID format.");
@@ -35,13 +55,12 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             order.OrderStatus = status;
             await _orderRepository.UpdateAsync(order);
             await _context.SaveChangesAsync();
+            return new ApiResponse
+            {
+                Succeeded = true,
+                Message = "Update success",
+                Data = order
+            };
         }
-
-        public async Task<IEnumerable<Order>> GetOrders()
-        {
-            return await _orderRepository.GetOrders();
-        }
-
-       
     }
 }

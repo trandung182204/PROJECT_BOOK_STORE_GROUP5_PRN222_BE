@@ -16,7 +16,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Book)
+                    .ThenInclude(oi => oi.Book)
+                .Include(o => o.User) 
                 .Where(o => o.User.Id.Equals(userid))
                 .ToListAsync();
         }
@@ -26,15 +27,35 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Repositories
             return await _context.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Book)
+                .Include(o => o.User)
                 .FirstOrDefaultAsync(o => o.Id.ToString().Equals(id));
         }
 
-        public async Task<IEnumerable<Order>> GetOrders()
+        public async Task<IEnumerable<Order>> GetOrders(string? orderStatus, DateTime? from, DateTime? to)
         {
-            return await _context.Orders
-                .Include(_o => _o.OrderItems)
-                .ThenInclude(_o => _o.Book)
-                .ToListAsync();
+            var query = _context.Orders
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.Book)
+                    .Include(o => o.User)
+                    .AsQueryable();
+
+            if (!string.IsNullOrEmpty(orderStatus))
+            {
+                query = query.Where(o => o.OrderStatus == orderStatus);
+            }
+
+            if (from.HasValue)
+            {
+                query = query.Where(o => o.CreatedAt >= from.Value);
+            }
+
+            if (to.HasValue)
+            {
+                var endDate = to.Value.Date.AddDays(1).AddTicks(-1);
+                query = query.Where(o => o.CreatedAt <= endDate);
+            }
+
+            return await query.ToListAsync();
         }
 
         
