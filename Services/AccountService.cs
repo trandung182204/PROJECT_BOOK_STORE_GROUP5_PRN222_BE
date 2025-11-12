@@ -104,6 +104,7 @@ public class AccountService : IAccountService
 
         var authClaims = new List<Claim>
         {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Email, user.Email!),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };

@@ -19,9 +19,18 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
 
         public async Task<ApiResponse> AddReviewAsync(long bookId, string userId, int rating, string comment)
         {
+            // check rating for book
+            if (rating < 1 || rating > 5)
+            {
+                return new ApiResponse
+                {
+                    Succeeded = false,
+                    Message = "Rating must between 1 and 5"
+                };
+            }
+
             // check user bought this book
             var HasPurchased = await _bookStoreContext.Orders
-                .Include(o => o.OrderItems)
                 .AnyAsync(o => o.UserId == userId
                 && o.OrderStatus == "Completed" && o.OrderItems.Any(i => i.BookId == bookId));
             if (!HasPurchased)
@@ -72,13 +81,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
                     Message = $"Failed to add review: {ex.Message}"
                 };
             }
-            await _review.AddAsync(review);
-            return new ApiResponse
-            {
-                Succeeded = true,
-                Message = "success",
-                Data = review
-            };
         }
 
         public async Task<ApiResponse> DeleteReviewAsync(long id, string userId)

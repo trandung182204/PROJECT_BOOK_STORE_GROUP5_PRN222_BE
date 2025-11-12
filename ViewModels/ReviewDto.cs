@@ -2,7 +2,6 @@
 {
     public class ReviewDto
     {
-        public string UserId { get; set; }
         public int rating { get; set; }
         public string comment { get; set; }
     }
