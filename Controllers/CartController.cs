@@ -8,7 +8,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class CartController : ControllerBase
     {
         private readonly ICartService _cartService;
@@ -17,7 +16,6 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         {
             _cartService = cartService;
         }
-
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         [HttpGet]
