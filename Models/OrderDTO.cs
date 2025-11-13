@@ -2,7 +2,7 @@
 {
     public class OrderDTO
     {
-        public long Id { get; set; }
+        public long Id { get; set; } = 0!;
 
         public string? UserId { get; set; }
 

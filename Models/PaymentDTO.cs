@@ -2,7 +2,7 @@
 {
     public class PaymentDTO
     {
-        public long Id { get; set; }
+        public long Id { get; set; } = 0!;
 
         public long OrderId { get; set; }
 
