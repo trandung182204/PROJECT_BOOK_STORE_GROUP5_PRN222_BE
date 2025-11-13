@@ -1,97 +1,181 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
-using System.Web;
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
 {
-    public interface IVnPayService
-    {
-        string CreatePaymentUrl(string orderId, decimal amount, string orderInfo);
-        bool ValidateSignature(IDictionary<string, string> responseData, string receivedHash);
-    }
-
     public class VnPayService : IVnPayService
     {
         private readonly IConfiguration _config;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public VnPayService(IConfiguration config)
+        // Lấy các giá trị từ appsettings.json
+        private readonly string _baseUrl;
+        private readonly string _tmnCode;
+        private readonly string _hashSecret;
+        private readonly string _returnUrl;
+
+        public VnPayService(IConfiguration config, IHttpContextAccessor httpContextAccessor)
         {
             _config = config;
+            _httpContextAccessor = httpContextAccessor;
+
+            _baseUrl = _config["VnPay:BaseUrl"];
+            _tmnCode = _config["VnPay:TmnCode"];
+            _hashSecret = _config["VnPay:HashSecret"];
+            _returnUrl = _config["VnPay:ReturnUrl"];
         }
 
         public string CreatePaymentUrl(string orderId, decimal amount, string orderInfo)
         {
-            string baseUrl = _config["VnPay:BaseUrl"];
-            string tmnCode = _config["VnPay:TmnCode"];
-            string hashSecret = _config["VnPay:HashSecret"];
-            string returnUrl = _config["VnPay:ReturnUrl"];
+            // 1. Lấy thông tin cần thiết
+            var ipAddress = GetIpAddress(_httpContextAccessor.HttpContext);
+            var now = DateTime.Now;
 
-            var vnpParams = new SortedList<string, string>(StringComparer.Ordinal)
-    {
-        { "vnp_Version", "2.1.0" },
-        { "vnp_Command", "pay" },
-        { "vnp_TmnCode", tmnCode },
-        { "vnp_Amount", ((int)(amount * 100)).ToString() },
-        { "vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss") },
-        { "vnp_CurrCode", "VND" },
-        { "vnp_IpAddr", "127.0.0.1" },
-        { "vnp_Locale", "vn" },
-        { "vnp_OrderInfo", orderInfo },
-        { "vnp_OrderType", "other" },
-        { "vnp_ReturnUrl", returnUrl },
-        { "vnp_TxnRef", orderId }
-    };
+            // 2. Tạo SortedDictionary để tự động sắp xếp theo Alphabet
+            var data = new SortedDictionary<string, string>(StringComparer.Ordinal)
+            {
+                { "vnp_Version", "2.1.0" },
+                { "vnp_Command", "pay" },
+                { "vnp_TmnCode", _tmnCode },
+                { "vnp_Amount", ((long)(amount * 100)).ToString() }, // ✨ Quan trọng: * 100
+                { "vnp_CreateDate", now.ToString("yyyyMMddHHmmss") },
+                { "vnp_CurrCode", "VND" },
+                { "vnp_IpAddr", ipAddress },
+                { "vnp_Locale", "vn" },
+                { "vnp_OrderInfo", orderInfo },
+                { "vnp_OrderType", "other" }, // Có thể tùy chỉnh
+                { "vnp_ReturnUrl", _returnUrl },
+                { "vnp_TxnRef", orderId }, // ID đơn hàng duy nhất
+                // { "vnp_HashType", "SHA512" } // VNPAY mặc định là SHA512 nếu bỏ trống
+            };
 
-            // ⚠️ Bước QUAN TRỌNG: thêm loại hash (VNPAY yêu cầu có)
-            vnpParams.Add("vnp_SecureHashType", "HMACSHA512");
+            // 3. Tạo chuỗi hashData (KHÔNG UrlEncode)
+            var hashDataBuilder = new StringBuilder();
+            foreach (var kvp in data)
+            {
+                hashDataBuilder.Append(kvp.Key);
+                hashDataBuilder.Append('=');
+                hashDataBuilder.Append(kvp.Value); // Giá trị gốc
+                hashDataBuilder.Append('&');
+            }
+            string hashData = hashDataBuilder.ToString().TrimEnd('&');
 
-            // 🔹 Bước 1: tạo rawData (chưa encode)
-            string rawData = string.Join("&", vnpParams
-                .Where(x => x.Key != "vnp_SecureHashType" && x.Key != "vnp_SecureHash")
-                .Select(kv => $"{kv.Key}={kv.Value}"));
+            // 4. Tạo chữ ký
+            string vnp_SecureHash = HmacSHA512(_hashSecret, hashData);
 
-            // 🔹 Bước 2: tạo secure hash
-            string secureHash = HmacSHA512(hashSecret, rawData);
+            // 5. Tạo URL cuối cùng (UrlEncode các giá trị)
+            var queryBuilder = new StringBuilder();
+            foreach (var kvp in data)
+            {
+                queryBuilder.Append(kvp.Key);
+                queryBuilder.Append('=');
+                queryBuilder.Append(Uri.EscapeDataString(kvp.Value)); // ✨ Quan trọng: UrlEncode giá trị
+                queryBuilder.Append('&');
+            }
+            queryBuilder.Append("vnp_SecureHash=");
+            queryBuilder.Append(Uri.EscapeDataString(vnp_SecureHash));
 
-            // 🔹 Bước 3: tạo query string (đã encode value)
-            string query = string.Join("&", vnpParams
-                .Where(x => x.Key != "vnp_SecureHash")
-                .Select(kv => $"{kv.Key}={HttpUtility.UrlEncode(kv.Value)}"));
-
-            // ✅ Thêm hash vào cuối cùng
-            string paymentUrl = $"{baseUrl}?{query}&vnp_SecureHash={secureHash}";
-
-            Console.WriteLine("======== RAW DATA (HASH INPUT) ========");
-            Console.WriteLine(rawData);
-            Console.WriteLine("=======================================");
-            Console.WriteLine("HASH SECRET: " + hashSecret);
-            Console.WriteLine("SECURE HASH: " + secureHash);
-            Console.WriteLine("FULL PAYMENT URL: " + paymentUrl);
-
-            return paymentUrl;
+            return $"{_baseUrl}?{queryBuilder.ToString()}";
         }
 
-
-        public bool ValidateSignature(IDictionary<string, string> responseData, string receivedHash)
+        public bool ValidateSignature(Dictionary<string, string> responseData, string vnp_SecureHash)
         {
-            string hashSecret = _config["VnPay:HashSecret"];
-            var sorted = new SortedList<string, string>(responseData, StringComparer.Ordinal);
+            // Lọc và sắp xếp các tham số trả về
+            var data = new SortedDictionary<string, string>(StringComparer.Ordinal);
+            foreach (var kvp in responseData)
+            {
+                if (!string.IsNullOrEmpty(kvp.Value) && kvp.Key.StartsWith("vnp_"))
+                {
+                    data.Add(kvp.Key, kvp.Value);
+                }
+            }
 
-            // Bỏ 2 trường này khi hash
-            sorted.Remove("vnp_SecureHash");
-            sorted.Remove("vnp_SecureHashType");
+            // Bỏ qua vnp_SecureHash và vnp_SecureHashType
+            data.Remove("vnp_SecureHash");
+            data.Remove("vnp_SecureHashType");
 
-            string rawData = string.Join("&", sorted.Select(kv => $"{kv.Key}={kv.Value}"));
-            string computedHash = HmacSHA512(hashSecret, rawData);
+            // Tạo chuỗi hashData
+            var hashDataBuilder = new StringBuilder();
+            foreach (var kvp in data)
+            {
+                hashDataBuilder.Append(kvp.Key);
+                hashDataBuilder.Append('=');
+                hashDataBuilder.Append(kvp.Value);
+                hashDataBuilder.Append('&');
+            }
+            string hashData = hashDataBuilder.ToString().TrimEnd('&');
 
-            return string.Equals(receivedHash, computedHash, StringComparison.OrdinalIgnoreCase);
+            // Tạo chữ ký từ dữ liệu trả về
+            string calculatedHash = HmacSHA512(_hashSecret, hashData);
+
+            // So sánh với chữ ký VNPAY gửi về
+            return calculatedHash.Equals(vnp_SecureHash, StringComparison.Ordinal);
         }
 
-        private string HmacSHA512(string key, string input)
+        // ============ HÀM HỖ TRỢ ============
+
+        private string HmacSHA512(string key, string inputData)
         {
-            using var hmac = new HMACSHA512(Encoding.UTF8.GetBytes(key));
-            byte[] hashValue = hmac.ComputeHash(Encoding.UTF8.GetBytes(input));
-            return BitConverter.ToString(hashValue).Replace("-", "").ToLower();
+            var hash = new StringBuilder();
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+            byte[] inputBytes = Encoding.UTF8.GetBytes(inputData);
+            using (var hmac = new HMACSHA512(keyBytes))
+            {
+                byte[] hashValue = hmac.ComputeHash(inputBytes);
+                foreach (var theByte in hashValue)
+                {
+                    hash.Append(theByte.ToString("x2"));
+                }
+            }
+            return hash.ToString();
+        }
+
+        private string GetIpAddress(HttpContext context)
+        {
+            // Cố gắng lấy IP public từ "X-Forwarded-For" (nếu có proxy)
+            string ip = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+
+            if (string.IsNullOrEmpty(ip))
+            {
+                ip = context.Connection.RemoteIpAddress?.ToString();
+            }
+
+            // Xử lý IP localhost (::1 hoặc 127.0.0.1) khi test ở local
+            if (ip == "::1" || ip == "127.0.0.1" || string.IsNullOrEmpty(ip))
+            {
+                // Thay thế bằng IP public (chỉ dùng cho test - VNPAY không chấp nhận localhost)
+                // Bạn có thể lấy IP public của mình trên trang: https://www.whatismyip.com/
+                // Hoặc chúng ta lấy IP nội bộ của máy
+                try
+                {
+                    using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
+                    {
+                        socket.Connect("8.8.8.8", 65530); // Kết nối (ảo) đến Google DNS
+                        IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+                        ip = endPoint?.Address?.ToString();
+                    }
+                }
+                catch (Exception)
+                {
+                    ip = "127.0.0.1"; // Nếu vẫn thất bại
+                }
+            }
+
+            // Nếu có nhiều IP (do proxy), chỉ lấy IP đầu tiên
+            if (ip != null && ip.Contains(","))
+            {
+                ip = ip.Split(',')[0].Trim();
+            }
+
+            return ip;
         }
     }
 }

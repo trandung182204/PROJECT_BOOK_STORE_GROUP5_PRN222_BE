@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Services;
@@ -69,6 +69,25 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         public async Task<IActionResult> ToggleUserStatus(string id)
         {
             return Ok(await userService.ToggleUserStatusAsync(id));
+        }
+
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMyInfo()
+        {
+            // Lấy userId của user đang đăng nhập từ token
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(currentUserId))
+            {
+                return Unauthorized(new ApiResponse
+                {
+                    Succeeded = false,
+                    Message = "Không tìm thấy thông tin user từ token."
+                });
+            }
+
+            // Gọi service để lấy thông tin user bằng ID
+            return Ok(await userService.GetUserByIdAsync(currentUserId));
         }
     }
 }
