@@ -36,28 +36,28 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         [Authorize]
         public async Task<IActionResult> GetOrdersOfUser(string userId)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var currentRole = User.FindFirstValue(ClaimTypes.Role);
-            Console.WriteLine(currentUserId +" va " +currentRole);
-            // Nếu là Customer thì chỉ được xem đơn hàng của chính mình
-            if (currentRole == "Customer" && userId != currentUserId)
-            {
-                return Ok(new { message = "You are not allowed to access other users' orders." });
-            }
+            //var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var currentRole = User.FindFirstValue(ClaimTypes.Role);
+            //Console.WriteLine(currentUserId +" va " +currentRole);
+            //// Nếu là Customer thì chỉ được xem đơn hàng của chính mình
+            //if (currentRole == "Customer" && userId != currentUserId)
+            //{
+            //    return Ok(new { message = "You are not allowed to access other users' orders." });
+            //}
 
-            // Nếu là Admin hoặc Staff thì được phép xem tất cả
-            if (currentRole == "Admin" || currentRole == "Staff")
-            {
-                var orders = await _orderService.GetOrdersByUserIdAsync(userId);
-                return Ok(orders);
-                    ////ewqeq
-            }
+            //// Nếu là Admin hoặc Staff thì được phép xem tất cả
+            //if (currentRole == "Admin" || currentRole == "Staff")
+            //{
+            //    var orders = await _orderService.GetOrdersByUserIdAsync(userId);
+            //    return Ok(orders);
+            //        ////ewqeq
+            //}
 
-            // Nếu không thuộc vai trò hợp lệ thì từ chối
-            if (currentRole != "Customer")
-            {
-                return Ok(new { message = "Your role cannot access this resource." });
-            }
+            //// Nếu không thuộc vai trò hợp lệ thì từ chối
+            //if (currentRole != "Customer")
+            //{
+            //    return Ok(new { message = "Your role cannot access this resource." });
+            //}
 
             // Trường hợp customer xem đơn hàng của chính họ
             var userOrders = await _orderService.GetOrdersByUserIdAsync(userId);
@@ -66,22 +66,21 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
 
         // GET /api/orders/{id}
         [HttpGet("{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GetOrderDetail(string id)
         {
-            var currentRole = User.FindFirstValue(ClaimTypes.Role);
-            if (!(currentRole == "Admin" || currentRole == "Staff"))
-            {
-                return Ok(new { message = "You are not allowed to access orders." });
-            }
-            else
-            {
+            //var currentRole = User.FindFirstValue(ClaimTypes.Role);
+            //if (!(currentRole == "Admin" || currentRole == "Staff"))
+            //{
+            //    return Ok(new { message = "You are not allowed to access orders." });
+            //}
+
                 var order = await _orderService.GetOrderDetailAsync(id);
                 if (order == null)
                     return NotFound(new { message = "Order not found!" });
 
                 return Ok(order);
-            }   
+              
         }
 
         // PUT /api/orders/{id}/status
@@ -89,8 +88,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateOrderStatus(string id, [FromBody] string status)
         {
-            var currentRole = User.FindFirstValue(ClaimTypes.Role);
-            if(currentRole != "Staff") return StatusCode(403, new { message = "You are not allowed to access orders." });
+            //var currentRole = User.FindFirstValue(ClaimTypes.Role);
+            //if(currentRole != "Staff") return StatusCode(403, new { message = "You are not allowed to access orders." });
             await _orderService.UpdateOrderStatusAsync(id, status);
             return Ok(new { message = $"Order {id} status updated to {status}" });
         }
