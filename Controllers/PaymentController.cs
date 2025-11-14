@@ -23,12 +23,13 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         [Authorize]
         public async Task<IActionResult> GetPayments([FromQuery] string? type = null, [FromQuery] DateTime? from = null, [FromQuery] DateTime? to = null)
         {
-            //var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //var currentRole = User.FindFirstValue(ClaimTypes.Role);
-            //if (currentRole != "Customer")
-            //{
-            //    return Ok(new { message = "You are not allowed to access this payment." });
-            //}
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentRole = User.FindFirstValue(ClaimTypes.Role);
+            Console.WriteLine("theew ewq eaw role="+ currentRole);
+            if (currentRole == "Customer")
+            {
+                return Ok(new { message = "You are not allowed to access this payment." });
+            }
             var payment = await _paymentService.GetPayments(type,from,to);
             return Ok(payment);
         }
@@ -37,12 +38,12 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         [Authorize]
         public async Task<IActionResult> CreatePayment([FromBody] PaymentDTO payment)
         {
-            //var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //var currentRole = User.FindFirstValue(ClaimTypes.Role);
-            //if (currentRole == null || currentUserId == null)
-            //{
-            //    return Ok(new { message = "You are not allowed to access here." });
-            //}
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentRole = User.FindFirstValue(ClaimTypes.Role);
+            if (currentRole == null || currentUserId == null)
+            {
+                return Ok(new { message = "You are not allowed to access here." });
+            }
             var created = await _paymentService.CreatePaymentAsync(payment);
             return Ok(new { message = "Payment created successfully!", payment = created });
         }
@@ -52,13 +53,14 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
         [Authorize]
         public async Task<IActionResult> GetPaymentDetail(string id)
         {
-            //var currentRole = User.FindFirstValue(ClaimTypes.Role);
-            //if (!(currentRole == "Admin" || currentRole == "Staff"))
-            //{
-            //    return Ok(new { message = "You are not allowed to access payments." });
-            //}
+            var currentRole = User.FindFirstValue(ClaimTypes.Role);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentRole == null || currentUserId == null)
+            {
+                return Ok(new { message = "You are not allowed to access payments." });
+            }
 
-                var payment = await _paymentService.GetPaymentDetailAsync(id);
+            var payment = await _paymentService.GetPaymentDetailAsync(id);
                 if (payment == null)
                     return NotFound(new { message = "Payment not found!" });
                 return Ok(payment);
