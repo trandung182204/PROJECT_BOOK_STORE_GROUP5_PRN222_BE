@@ -70,7 +70,8 @@ public class AccountService : IAccountService
                 Succeeded = false,
                 Message = "User not found.",
             };
-        var passwordValid = user != null && await userManager.CheckPasswordAsync(user, signIn.Password);
+
+        var passwordValid = await userManager.CheckPasswordAsync(user, signIn.Password);
         if (!passwordValid)
         {
             return new ApiResponse
@@ -90,13 +91,29 @@ public class AccountService : IAccountService
             };
         }
 
+        // Lấy roles
+        var roles = await userManager.GetRolesAsync(user);
+        var isAdmin = roles.Contains(AppRole.Admin);
+        var redirectUrl = isAdmin ? "admin.html" : "index.html";
+
+        // Tạo token
+        var tokens = await GenerateTokensAsync(user);
+
         return new ApiResponse
         {
             Succeeded = true,
-            Message = "Generated Token.",
-            Data = await GenerateTokensAsync(user)
+            Message = "Login successfully.",
+            Data = new
+            {
+                accessToken = tokens.AccessToken,
+                refreshToken = tokens.RefreshToken,
+                roles = roles,          // gửi luôn roles nếu cần
+                isAdmin = isAdmin,      // backend đã quyết định
+                redirectUrl = redirectUrl
+            }
         };
     }
+
 
     private async Task<TokenModel> GenerateTokensAsync(ApplicationUser user)
     {
