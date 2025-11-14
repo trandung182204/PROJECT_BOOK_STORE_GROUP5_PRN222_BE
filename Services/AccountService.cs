@@ -37,9 +37,10 @@ public class AccountService : IAccountService
         {
             FullName = signUp.FullName,
             Address = signUp.Address,
-            AvatarUrl = signUp.AvatarUrl,
+            PhoneNumber = signUp.PhoneNumber,
             Email = signUp.Email,
             UserName = signUp.Email,
+            AvatarUrl = "default.jpg"
         };
         var result = await userManager.CreateAsync(user, signUp.Password);
         if (result.Succeeded)

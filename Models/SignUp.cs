@@ -15,6 +15,6 @@ public class SignUp
     [Required]
     public string Address { get; set; } = null!;
     [Required]
-    public string AvatarUrl { get; set; } = null!;
+    public string PhoneNumber { get; set; } = null!;
 
 }
