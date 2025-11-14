@@ -50,6 +50,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ICheckoutService, CheckoutService>();
             builder.Services.AddScoped<IBookRepository, BookRepository>();
             builder.Services.AddHttpClient();
             builder.Services.AddScoped<GoogleBooksService>();

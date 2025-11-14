@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Models;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.ViewModels;
+using System.Linq; // ✨ Thêm using này
+using System.Threading.Tasks; // ✨ Thêm using này
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
 {
@@ -39,7 +41,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             {
                 Succeeded = true,
                 Message = "Get checkout summary successful!",
-                Data = new {
+                Data = new
+                {
                     Subtotal = subtotal,
                     Shipping = shipping,
                     Total = total
@@ -58,15 +61,18 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
                 throw new Exception("Cart is empty");
 
             decimal total = cart.CartItems.Sum(i => i.Book.Price * i.Quantity);
+            decimal shipping = total >= 300 ? 0 : 15;
+            decimal grandTotal = total + shipping;
 
             var order = new Order
             {
                 UserId = userId,
-                TotalAmount = total,
-                ShippingFee = total > 500000 ? 0 : 20000,
+                TotalAmount = grandTotal, // ✨ Sửa: dùng grandTotal
+                ShippingFee = shipping,   // ✨ Sửa: dùng shipping
                 ShippingAddress = address,
                 PaymentMethod = "COD",
-                PaymentStatus = "PENDING"
+                PaymentStatus = "PENDING",
+                OrderStatus = "PENDING" // ✨ Thêm trạng thái đơn hàng
             };
 
             _context.Orders.Add(order);
@@ -84,7 +90,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             }
 
             await _context.SaveChangesAsync();
-            await ClearCartAsync(cart);
+            await ClearCartAsync(cart); // Xóa giỏ hàng
 
             return new ApiResponse
             {
@@ -94,7 +100,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
             };
         }
 
-        public async Task<ApiResponse> CreateVnPayPaymentUrlAsync(string userId)
+        // ✨ ============ SỬA LẠI HOÀN TOÀN HÀM NÀY ============
+        public async Task<ApiResponse> CreateVnPayPaymentUrlAsync(string userId, string address, string note)
         {
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
@@ -105,58 +112,72 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
                 throw new Exception("Cart is empty");
 
             decimal total = cart.CartItems.Sum(i => i.Book.Price * i.Quantity);
-            decimal shipping = total > 500000 ? 0 : 20000;
+            decimal shipping = total >= 300 ? 0 : 15;
             decimal grandTotal = total + shipping;
 
             var order = new Order
             {
                 UserId = userId,
                 TotalAmount = grandTotal,
+                ShippingFee = shipping,
+                ShippingAddress = address, // ✨ LƯU ĐỊA CHỈ
                 PaymentMethod = "VNPAY",
                 PaymentStatus = "PENDING",
+                OrderStatus = "PENDING_PAYMENT", // Trạng thái chờ thanh toán
                 CreatedAt = DateTime.Now
             };
 
             _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // Lưu để lấy OrderId
 
+            // ✨ THÊM ORDER ITEMS (Giống hàm COD)
+            foreach (var item in cart.CartItems)
+            {
+                _context.OrderItems.Add(new OrderItem
+                {
+                    OrderId = order.Id,
+                    BookId = item.BookId,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.Book.Price
+                });
+            }
+
+            // ✨ QUAN TRỌNG: KHÔNG XÓA GIỎ HÀNG VỘI!
+            await _context.SaveChangesAsync(); // Lưu OrderItems
+
+            // Tạo link VNPAY
             string url = _vnPayService.CreatePaymentUrl(order.Id.ToString(), grandTotal, $"Thanh toan don hang #{order.Id}");
+
             return new ApiResponse
             {
                 Succeeded = true,
                 Message = "Create VNPAY payment url successful!",
-                Data = url
+                Data = new { paymentUrl = url } // ✨ Đóng gói URL vào object
             };
         }
 
+        // ✨ ============ SỬA HÀM NÀY ĐỂ XÓA GIỎ HÀNG ============
         public async Task<ApiResponse> HandleVnPayReturnAsync(VnPayReturnRequest request)
         {
             long orderId = long.Parse(request.vnp_TxnRef);
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (order == null)
-                return new ApiResponse
-                {
-                    Succeeded = false,
-                    Message = "Handel VnPay Return uncessful, order is invalid",
-                };
+                return new ApiResponse { Succeeded = false, Message = "Order invalid" };
 
+            // (Giừng nguyên logic ValidateSignature)
             var responseDict = request.GetType()
                 .GetProperties()
                 .Where(p => p.Name.StartsWith("vnp_"))
                 .ToDictionary(p => p.Name, p => p.GetValue(request)?.ToString() ?? "");
-
             bool valid = _vnPayService.ValidateSignature(responseDict, request.vnp_SecureHash);
 
             if (!valid)
-                return new ApiResponse
-                {
-                    Succeeded = false,
-                    Message = "Validate Signature uncessful",
-                };
+                return new ApiResponse { Succeeded = false, Message = "Invalid Signature" };
 
             if (request.vnp_ResponseCode == "00")
             {
+                // Thanh toán thành công
                 order.PaymentStatus = "PAID";
                 order.OrderStatus = "WAIT_CONFIRM";
                 order.UpdatedAt = DateTime.Now;
@@ -171,21 +192,21 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
                     PaidAt = DateTime.Now
                 });
 
-                await _context.SaveChangesAsync();
-                return new ApiResponse
+                // ✨ XÓA GIỎ HÀNG SAU KHI THANH TOÁN THÀNH CÔNG
+                var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == order.UserId);
+                if (cart != null)
                 {
-                    Succeeded = true,
-                    Message = "Create Payment Successful"
-                };
+                    await ClearCartAsync(cart); // Gọi hàm ClearCart của bạn
+                }
+
+                await _context.SaveChangesAsync();
+                return new ApiResponse { Succeeded = true, Message = "Create Payment Successful" };
             }
 
+            // Thanh toán thất bại
             order.PaymentStatus = "FAILED";
             await _context.SaveChangesAsync();
-            return new ApiResponse
-            {
-                Succeeded = false,
-                Message = " Payment failed"
-            };
+            return new ApiResponse { Succeeded = false, Message = "Payment failed" };
         }
 
         private async Task ClearCartAsync(Cart cart)

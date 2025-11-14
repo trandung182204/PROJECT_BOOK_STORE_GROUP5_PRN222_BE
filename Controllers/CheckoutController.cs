@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PROJECT_BOOK_STORE_GROUP5_PRN222.Services;
-using PROJECT_BOOK_STORE_GROUP5_PRN222.ViewModels;
+using PROJECT_BOOK_STORE_GROUP5_PRN222.ViewModels; // Đảm bảo bạn có using ViewModel
 using System.Security.Claims;
 
 namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
@@ -20,6 +20,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
 
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+        // GET /api/checkout/summary (Giữ nguyên)
         [HttpGet("summary")]
         public async Task<IActionResult> GetSummary()
         {
@@ -27,25 +28,46 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
             return Ok(result);
         }
 
-        [HttpPost("cod")]
-        public async Task<IActionResult> CheckoutCOD([FromBody] CheckoutRequest request)
+        // ✨ HỢP NHẤT API: Dùng 1 endpoint duy nhất
+        // POST /api/checkout
+        [HttpPost]
+        public async Task<IActionResult> PlaceOrder([FromBody] CheckoutRequest request)
         {
-            var order = await _checkoutService.CreateOrderCODAsync(GetUserId(), request.ShippingAddress, request.Note);
-            return Ok(new { message = "COD order created successfully", order });
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userId = GetUserId();
+
+            if (string.Equals(request.PaymentMethod, "cod", System.StringComparison.OrdinalIgnoreCase))
+            {
+                // Xử lý COD
+                var result = await _checkoutService.CreateOrderCODAsync(userId, request.ShippingAddress, request.Note);
+                return Ok(result);
+            }
+            else if (string.Equals(request.PaymentMethod, "vnpay", System.StringComparison.OrdinalIgnoreCase))
+            {
+                // Xử lý VNPAY (Service đã được sửa ở dưới)
+                var result = await _checkoutService.CreateVnPayPaymentUrlAsync(userId, request.ShippingAddress, request.Note);
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(new { message = "Phương thức thanh toán không hợp lệ." });
+            }
         }
 
-        [HttpPost("vnpay")]
-        public async Task<IActionResult> CreateVnPayUrl()
-        {
-            var url = await _checkoutService.CreateVnPayPaymentUrlAsync(GetUserId());
-            return Ok(new { paymentUrl = url });
-        }
-
+        // GET /api/checkout/vnpay/return (Giữ nguyên)
         [AllowAnonymous]
         [HttpGet("vnpay/return")]
         public async Task<IActionResult> VnPayReturn([FromQuery] VnPayReturnRequest request)
         {
             var result = await _checkoutService.HandleVnPayReturnAsync(request);
+
+            // Bạn có thể muốn Redirect về trang Frontend sau khi xử lý
+            // Ví dụ: return Redirect("http://link-frontend.com/thankyou");
+
             return Ok(result);
         }
     }
