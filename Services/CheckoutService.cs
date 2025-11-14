@@ -72,7 +72,7 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Services
                 ShippingAddress = address,
                 PaymentMethod = "COD",
                 PaymentStatus = "PENDING",
-                OrderStatus = "PENDING" // ✨ Thêm trạng thái đơn hàng
+                OrderStatus = "SHIPPING" // ✨ Thêm trạng thái đơn hàng
             };
 
             _context.Orders.Add(order);
