@@ -87,8 +87,8 @@ namespace PROJECT_BOOK_STORE_GROUP5_PRN222.Controllers
 
             if (currentRole == "Customer" && status != "CANCELLED")
                 return Ok( new { message = "Customer can only cancel order." });
-            if (currentRole != "Admin") 
-                return Ok( new { message = "You are not allowed to access orders." });
+            //if (currentRole != "Admin") 
+            //    return Ok( new { message = "You are not allowed to access orders." });
             await _orderService.UpdateOrderStatusAsync(id, status);
             return Ok(new { message = $"Order {id} status updated to {status}" });
         }
